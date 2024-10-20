@@ -13,6 +13,8 @@ class SearchPage extends StatefulWidget {
 class SearchState extends State<SearchPage>
 {
   List<int> cookingTimes = [];
+  List<String> allIngredients = ['brokul', 'kalafior']; //tutaj bym wczytal potem wszystkie skladniki i zrobil wyszukiwarke nie
+  List<String> selectedIngredients = [];
   int? _chosenTime;
   @override
   void initState() {
@@ -32,6 +34,8 @@ class SearchState extends State<SearchPage>
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           timeSelection(),
+          SizedBox(height: 20),
+          ingredientsSelection()
         ],
       )
     );
@@ -51,7 +55,7 @@ class SearchState extends State<SearchPage>
           crossAxisAlignment: CrossAxisAlignment.center,
           children: 
           [
-            Text('Wybierz preferowany czas przygotowania potrawy', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w400),),
+            Text('Wybierz preferowany czas przygotowania potrawy', style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),),
             DropdownButton<int>(
         hint: Text("Pick"),
         value: _chosenTime,
@@ -73,4 +77,26 @@ class SearchState extends State<SearchPage>
     );
   } 
   
+
+  Padding ingredientsSelection()
+  {
+    return Padding(padding: const EdgeInsets.all
+    (8),
+    child:
+     Container
+     (
+      height: 200,
+      decoration: BoxDecoration(border: Border.all(width: 8, color: Colors.black), borderRadius: BorderRadius.circular(16)),
+      child: Column
+      (
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: 
+        [
+          TextField(decoration: InputDecoration(hintText: 'Wyszukaj składniki'))
+        ],
+      )      
+     ),
+    );
+  }
 }
