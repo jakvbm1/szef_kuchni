@@ -10,6 +10,8 @@ class SearchPage extends StatefulWidget {
 
 class SearchState extends State<SearchPage> {
   List<int> cookingTimes = [];
+  TextEditingController ingredientTec = TextEditingController();
+  String ingredientPattern = '';
   List<String> allIngredients = [
     'brokul',
     'kalafior'
@@ -17,12 +19,20 @@ class SearchState extends State<SearchPage> {
   List<String> selectedIngredients = [];
   int? _chosenTime;
   @override
+ 
   void initState() {
     for (int i = 0; i < 20; i++) {
       cookingTimes.add((i + 1) * 5);
     }
+
+    ingredientTec.addListener(() {
+      setState(() {
+        ingredientPattern = ingredientTec.text;
+      });
+    });
     super.initState();
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -78,6 +88,8 @@ class SearchState extends State<SearchPage> {
   }
 
   Padding ingredientsSelection() {
+
+
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
@@ -90,8 +102,9 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                  decoration: InputDecoration(hintText: 'Wyszukaj składniki')),
-              Container(child: displayIngredients(''), height: 120,)
+                  decoration: InputDecoration(hintText: 'Wyszukaj składniki'),
+                  controller: ingredientTec,),
+              Container(child: displayIngredients(ingredientPattern), height: 120,)
             ],
           )),
     );
