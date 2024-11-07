@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_svg/svg.dart';
 
 class SearchPage extends StatefulWidget {
   @override
@@ -10,6 +11,7 @@ class SearchPage extends StatefulWidget {
 
 class SearchState extends State<SearchPage> {
   List<int> cookingTimes = [];
+
   TextEditingController ingredientTec = TextEditingController();
   String ingredientPattern = '';
   List<String> allIngredients = [
@@ -17,6 +19,10 @@ class SearchState extends State<SearchPage> {
     'kalafior'
   ]; //tutaj bym wczytal potem wszystkie skladniki i zrobil wyszukiwarke nie
   List<String> selectedIngredients = ['papryka'];
+
+
+
+
   int? _chosenTime;
   @override
  
@@ -127,13 +133,23 @@ class SearchState extends State<SearchPage> {
         separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
-          return Container(
-            decoration: BoxDecoration(
-                          border: Border.all(width: 2, color: Colors.black),
-                          borderRadius: BorderRadius.circular(12)),
-            height: 80,
-            width: 160,
-            child: Text(ingredients[index], textAlign: TextAlign.center,),
+          return GestureDetector(
+
+            onTap: (){setState(() {
+              if(!selectedIngredients.contains(ingredients[index]))
+              {
+              selectedIngredients.add(ingredients[index]);
+              }
+            });},
+
+            child: Container(
+              decoration: BoxDecoration(
+                            border: Border.all(width: 2, color: Colors.black),
+                            borderRadius: BorderRadius.circular(12)),
+              height: 80,
+              width: 160,
+              child: Text(ingredients[index], textAlign: TextAlign.center,),
+            ),
           );
         },
         itemCount: ingredients.length);
@@ -172,7 +188,26 @@ class SearchState extends State<SearchPage> {
                           borderRadius: BorderRadius.circular(12)),
             height: 80,
             width: 160,
-            child: Text(selectedIngredients[index], textAlign: TextAlign.center,),
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Text(selectedIngredients[index], textAlign: TextAlign.center,),
+                GestureDetector(onTap: () {
+                  setState(() {
+                    selectedIngredients.remove(selectedIngredients[index]);
+                  });
+                },
+                child: Container
+                (
+                  height: 40,
+                  width: 40,
+                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(width: 1), color: Colors.red[200]),
+                  child: Icon(Icons.remove)
+                ),
+                )
+              ],
+            ),
           );
         },
         itemCount: selectedIngredients.length);
