@@ -16,7 +16,7 @@ class SearchState extends State<SearchPage> {
     'brokul',
     'kalafior'
   ]; //tutaj bym wczytal potem wszystkie skladniki i zrobil wyszukiwarke nie
-  List<String> selectedIngredients = [];
+  List<String> selectedIngredients = ['papryka'];
   int? _chosenTime;
   @override
  
@@ -47,7 +47,9 @@ class SearchState extends State<SearchPage> {
           children: [
             timeSelection(),
             SizedBox(height: 20),
-            ingredientsSelection()
+            ingredientsSelection(),
+            SizedBox(height: 20),
+            chosenIngredients()
           ],
         ));
   }
@@ -93,7 +95,7 @@ class SearchState extends State<SearchPage> {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
-          height: 300,
+          height: 200,
           decoration: BoxDecoration(
               border: Border.all(width: 8, color: Colors.black),
               borderRadius: BorderRadius.circular(16)),
@@ -136,4 +138,45 @@ class SearchState extends State<SearchPage> {
         },
         itemCount: ingredients.length);
   }
+
+  Padding chosenIngredients()
+  {
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+              border: Border.all(width: 8, color: Colors.black),
+              borderRadius: BorderRadius.circular(16)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              Text('Wybrane składniki'),
+              Container(child: displayChosenIngredients(), height: 120,)
+            ],
+          )),
+    );
+  }
+
+  ListView displayChosenIngredients()
+  {
+    return ListView.separated(
+        padding: const EdgeInsets.all(8),
+        separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
+        scrollDirection: Axis.horizontal,
+        itemBuilder: (BuildContext context, int index) {
+          return Container(
+            decoration: BoxDecoration(
+                          border: Border.all(width: 2, color: Colors.black),
+                          borderRadius: BorderRadius.circular(12)),
+            height: 80,
+            width: 160,
+            child: Text(selectedIngredients[index], textAlign: TextAlign.center,),
+          );
+        },
+        itemCount: selectedIngredients.length);
+  }
+
+
 }
