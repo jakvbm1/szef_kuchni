@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
@@ -20,6 +21,11 @@ class SearchState extends State<SearchPage> {
   ]; //tutaj bym wczytal potem wszystkie skladniki i zrobil wyszukiwarke nie
   List<String> selectedIngredients = ['papryka'];
 
+  List<String> allCharacteristics = ['smaczne', 'weganskie', 'wysokobialokowe'];
+  List<String> selectedCharacteristics = ['wegetarianskie'];
+  TextEditingController characteristicTec = TextEditingController();
+  String characteristicPattern = '';
+
 
 
 
@@ -36,6 +42,12 @@ class SearchState extends State<SearchPage> {
         ingredientPattern = ingredientTec.text;
       });
     });
+
+    characteristicTec.addListener((){
+      setState(() {
+        characteristicPattern = characteristicTec.text;
+      });
+    });
     super.initState();
   }
   
@@ -48,16 +60,26 @@ class SearchState extends State<SearchPage> {
               style: TextStyle(fontSize: 48, fontWeight: FontWeight.w500)),
           centerTitle: true,
         ),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            timeSelection(),
-            SizedBox(height: 20),
-            ingredientsSelection(),
-            SizedBox(height: 20),
-            chosenIngredients()
-          ],
-        ));
+        body: 
+            SingleChildScrollView(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  timeSelection(),
+                  SizedBox(height: 20),
+                  ingredientsSelection(),
+                  SizedBox(height: 20),
+                  chosenIngredients(selectedIngredients),
+                  SizedBox(height: 20),
+                  CharacteristicsSelection(),
+                  SizedBox(height: 20),
+                  chosenIngredients(selectedCharacteristics),
+                  searchButton()
+                ],
+              ),
+            ),
+
+        );
   }
 
   Padding timeSelection() {
@@ -112,22 +134,22 @@ class SearchState extends State<SearchPage> {
               TextField(
                   decoration: InputDecoration(hintText: 'Wyszukaj składniki'),
                   controller: ingredientTec,),
-              Container(child: displayIngredients(ingredientPattern), height: 120,)
+              Container(child: displayFromList(ingredientPattern, allIngredients, selectedIngredients), height: 120,)
             ],
           )),
     );
   }
 
-  ListView displayIngredients(String pattern) {
-    List<String> ingredients = [];
+  ListView displayFromList(String pattern, List<String> listIn, List<String> listOut) {
+    List<String> displayedList = [];
     if (pattern.isNotEmpty) {
-      for (int i = 0; i < allIngredients.length; i++) {
-        if (allIngredients[i].contains(pattern)) {
-          ingredients.add(allIngredients[i]);
+      for (int i = 0; i < listIn.length; i++) {
+        if (listIn[i].contains(pattern)) {
+          displayedList.add(listIn[i]);
         }
       }
     } else
-      {ingredients = allIngredients;}
+      {displayedList = listIn;}
     return ListView.separated(
         padding: const EdgeInsets.all(8),
         separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
@@ -136,9 +158,9 @@ class SearchState extends State<SearchPage> {
           return GestureDetector(
 
             onTap: (){setState(() {
-              if(!selectedIngredients.contains(ingredients[index]))
+              if(!listOut.contains(displayedList[index]))
               {
-              selectedIngredients.add(ingredients[index]);
+              listOut.add(displayedList[index]);
               }
             });},
 
@@ -148,14 +170,14 @@ class SearchState extends State<SearchPage> {
                             borderRadius: BorderRadius.circular(12)),
               height: 80,
               width: 160,
-              child: Text(ingredients[index], textAlign: TextAlign.center,),
+              child: Text(displayedList[index], textAlign: TextAlign.center,),
             ),
           );
         },
-        itemCount: ingredients.length);
+        itemCount: displayedList.length);
   }
 
-  Padding chosenIngredients()
+  Padding chosenIngredients(List<String> selected)
   {
     return Padding(
       padding: const EdgeInsets.all(8),
@@ -168,14 +190,14 @@ class SearchState extends State<SearchPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Wybrane składniki'),
-              Container(child: displayChosenIngredients(), height: 120,)
+              Text('Wybrane'),
+              Container(child: displayChosen(selected), height: 120,)
             ],
           )),
     );
   }
 
-  ListView displayChosenIngredients()
+  ListView displayChosen(List<String> selected)
   {
     return ListView.separated(
         padding: const EdgeInsets.all(8),
@@ -195,7 +217,7 @@ class SearchState extends State<SearchPage> {
                 Text(selectedIngredients[index], textAlign: TextAlign.center,),
                 GestureDetector(onTap: () {
                   setState(() {
-                    selectedIngredients.remove(selectedIngredients[index]);
+                    selected.remove(selected[index]);
                   });
                 },
                 child: Container
@@ -212,6 +234,35 @@ class SearchState extends State<SearchPage> {
         },
         itemCount: selectedIngredients.length);
   }
+
+  Padding CharacteristicsSelection() {
+
+
+    return Padding(
+      padding: const EdgeInsets.all(8),
+      child: Container(
+          height: 200,
+          decoration: BoxDecoration(
+              border: Border.all(width: 8, color: Colors.black),
+              borderRadius: BorderRadius.circular(16)),
+          child: Column(
+            mainAxisAlignment: MainAxisAlignment.start,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              TextField(
+                  decoration: InputDecoration(hintText: 'Wyszukaj cechę'),
+                  controller: characteristicTec,),
+              Container(child: displayFromList(characteristicPattern, allCharacteristics, selectedCharacteristics), height: 120,)
+            ],
+          )),
+    );
+  }
+
+TextButton searchButton()
+{
+  return TextButton(onPressed: (){}, child: Text('wyszukaj'));
+}
+
 
 
 }
