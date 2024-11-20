@@ -1,9 +1,10 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_svg/svg.dart';
+import 'package:szef_kuchni/pages/recipies_page.dart';
+import 'package:szef_kuchni/services/database_service.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return SearchState();
@@ -11,6 +12,9 @@ class SearchPage extends StatefulWidget {
 }
 
 class SearchState extends State<SearchPage> {
+  // instancja bazy z ktorej pobiera sie przepisy
+  final DatabaseService _databaseService = DatabaseService.instance;
+
   List<int> cookingTimes = [];
 
   TextEditingController ingredientTec = TextEditingController();
@@ -26,12 +30,8 @@ class SearchState extends State<SearchPage> {
   TextEditingController characteristicTec = TextEditingController();
   String characteristicPattern = '';
 
-
-
-
   int? _chosenTime;
   @override
- 
   void initState() {
     for (int i = 0; i < 20; i++) {
       cookingTimes.add((i + 1) * 5);
@@ -43,43 +43,42 @@ class SearchState extends State<SearchPage> {
       });
     });
 
-    characteristicTec.addListener((){
+    characteristicTec.addListener(() {
       setState(() {
         characteristicPattern = characteristicTec.text;
       });
     });
     super.initState();
   }
-  
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-          title: Text("Wyszukaj danie",
-              style: TextStyle(fontSize: 48, fontWeight: FontWeight.w500)),
-          centerTitle: true,
+      appBar: AppBar(
+        title: Text(
+          "Wyszukaj danie",
+          style: TextStyle(fontSize: 48, fontWeight: FontWeight.w500),
         ),
-        body: 
-            SingleChildScrollView(
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  timeSelection(),
-                  SizedBox(height: 20),
-                  ingredientsSelection(),
-                  SizedBox(height: 20),
-                  chosenIngredients(selectedIngredients),
-                  SizedBox(height: 20),
-                  CharacteristicsSelection(),
-                  SizedBox(height: 20),
-                  chosenIngredients(selectedCharacteristics),
-                  searchButton()
-                ],
-              ),
-            ),
-
-        );
+        centerTitle: true,
+      ),
+      body: SingleChildScrollView(
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            timeSelection(),
+            SizedBox(height: 20),
+            ingredientsSelection(),
+            SizedBox(height: 20),
+            chosenIngredients(selectedIngredients),
+            SizedBox(height: 20),
+            CharacteristicsSelection(),
+            SizedBox(height: 20),
+            chosenIngredients(selectedCharacteristics),
+            searchButton()
+          ],
+        ),
+      ),
+    );
   }
 
   Padding timeSelection() {
@@ -95,7 +94,7 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text(
-                'Wybierz preferowany czas przygotowania potrawy',
+                'Wybierz preferowany czas',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
               ),
               DropdownButton<int>(
@@ -118,8 +117,6 @@ class SearchState extends State<SearchPage> {
   }
 
   Padding ingredientsSelection() {
-
-
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
@@ -132,15 +129,24 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                  decoration: InputDecoration(hintText: 'Wyszukaj składniki'),
-                  controller: ingredientTec,),
-              Container(child: displayFromList(ingredientPattern, allIngredients, selectedIngredients), height: 120,)
+                decoration: InputDecoration(hintText: 'Wyszukaj składniki'),
+                controller: ingredientTec,
+              ),
+              Container(
+                child: displayFromList(
+                  ingredientPattern,
+                  allIngredients,
+                  selectedIngredients,
+                ),
+                height: 120,
+              )
             ],
           )),
     );
   }
 
-  ListView displayFromList(String pattern, List<String> listIn, List<String> listOut) {
+  ListView displayFromList(
+      String pattern, List<String> listIn, List<String> listOut) {
     List<String> displayedList = [];
     if (pattern.isNotEmpty) {
       for (int i = 0; i < listIn.length; i++) {
@@ -148,37 +154,41 @@ class SearchState extends State<SearchPage> {
           displayedList.add(listIn[i]);
         }
       }
-    } else
-      {displayedList = listIn;}
+    } else {
+      displayedList = listIn;
+    }
     return ListView.separated(
         padding: const EdgeInsets.all(8),
-        separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
+        separatorBuilder: (BuildContext context, int Index) => SizedBox(
+              width: 10,
+            ),
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
-
-            onTap: (){setState(() {
-              if(!listOut.contains(displayedList[index]))
-              {
-              listOut.add(displayedList[index]);
-              }
-            });},
-
+            onTap: () {
+              setState(() {
+                if (!listOut.contains(displayedList[index])) {
+                  listOut.add(displayedList[index]);
+                }
+              });
+            },
             child: Container(
               decoration: BoxDecoration(
-                            border: Border.all(width: 2, color: Colors.black),
-                            borderRadius: BorderRadius.circular(12)),
+                  border: Border.all(width: 2, color: Colors.black),
+                  borderRadius: BorderRadius.circular(12)),
               height: 80,
               width: 160,
-              child: Text(displayedList[index], textAlign: TextAlign.center,),
+              child: Text(
+                displayedList[index],
+                textAlign: TextAlign.center,
+              ),
             ),
           );
         },
         itemCount: displayedList.length);
   }
 
-  Padding chosenIngredients(List<String> selected)
-  {
+  Padding chosenIngredients(List<String> selected) {
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
@@ -191,42 +201,51 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               Text('Wybrane'),
-              Container(child: displayChosen(selected), height: 120,)
+              Container(
+                child: displayChosen(selected),
+                height: 120,
+              )
             ],
           )),
     );
   }
 
-  ListView displayChosen(List<String> selected)
-  {
+  ListView displayChosen(List<String> selected) {
     return ListView.separated(
         padding: const EdgeInsets.all(8),
-        separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
+        separatorBuilder: (BuildContext context, int Index) => SizedBox(
+              width: 10,
+            ),
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           return Container(
             decoration: BoxDecoration(
-                          border: Border.all(width: 2, color: Colors.black),
-                          borderRadius: BorderRadius.circular(12)),
+                border: Border.all(width: 2, color: Colors.black),
+                borderRadius: BorderRadius.circular(12)),
             height: 80,
             width: 160,
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Text(selectedIngredients[index], textAlign: TextAlign.center,),
-                GestureDetector(onTap: () {
-                  setState(() {
-                    selected.remove(selected[index]);
-                  });
-                },
-                child: Container
-                (
-                  height: 40,
-                  width: 40,
-                  decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(width: 1), color: Colors.red[200]),
-                  child: Icon(Icons.remove)
+                Text(
+                  selectedIngredients[index],
+                  textAlign: TextAlign.center,
                 ),
+                GestureDetector(
+                  onTap: () {
+                    setState(() {
+                      selected.remove(selected[index]);
+                    });
+                  },
+                  child: Container(
+                      height: 40,
+                      width: 40,
+                      decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(width: 1),
+                          color: Colors.red[200]),
+                      child: Icon(Icons.remove)),
                 )
               ],
             ),
@@ -236,8 +255,6 @@ class SearchState extends State<SearchPage> {
   }
 
   Padding CharacteristicsSelection() {
-
-
     return Padding(
       padding: const EdgeInsets.all(8),
       child: Container(
@@ -250,19 +267,28 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                  decoration: InputDecoration(hintText: 'Wyszukaj cechę'),
-                  controller: characteristicTec,),
-              Container(child: displayFromList(characteristicPattern, allCharacteristics, selectedCharacteristics), height: 120,)
+                decoration: InputDecoration(hintText: 'Wyszukaj cechę'),
+                controller: characteristicTec,
+              ),
+              Container(
+                child: displayFromList(characteristicPattern,
+                    allCharacteristics, selectedCharacteristics),
+                height: 120,
+              )
             ],
           )),
     );
   }
 
-TextButton searchButton()
-{
-  return TextButton(onPressed: (){}, child: Text('wyszukaj'));
-}
-
-
-
+  TextButton searchButton() {
+    return TextButton(
+      onPressed: () {
+        //tymczasowa strona do wyswietlania wszystkich przepisow
+        Navigator.of(context).push(MaterialPageRoute(
+            builder: (context) =>
+                RecipiesPage(databaseService: _databaseService)));
+      },
+      child: Text('wyszukaj'),
+    );
+  }
 }
