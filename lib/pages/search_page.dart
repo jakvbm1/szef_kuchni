@@ -4,6 +4,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/svg.dart';
 
 class SearchPage extends StatefulWidget {
+  const SearchPage({super.key});
+
   @override
   State<StatefulWidget> createState() {
     return SearchState();
@@ -56,7 +58,7 @@ class SearchState extends State<SearchPage> {
   Widget build(BuildContext context) {
     return Scaffold(
         appBar: AppBar(
-          title: Text("Wyszukaj danie",
+          title: const Text("Wyszukaj danie",
               style: TextStyle(fontSize: 48, fontWeight: FontWeight.w500)),
           centerTitle: true,
         ),
@@ -66,13 +68,13 @@ class SearchState extends State<SearchPage> {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   timeSelection(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   ingredientsSelection(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   chosenIngredients(selectedIngredients),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   CharacteristicsSelection(),
-                  SizedBox(height: 20),
+                  const SizedBox(height: 20),
                   chosenIngredients(selectedCharacteristics),
                   searchButton()
                 ],
@@ -94,17 +96,17 @@ class SearchState extends State<SearchPage> {
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text(
+              const Text(
                 'Wybierz preferowany czas przygotowania potrawy',
                 style: TextStyle(fontSize: 20, fontWeight: FontWeight.w400),
               ),
               DropdownButton<int>(
-                  hint: Text("Pick"),
+                  hint: const Text("Pick"),
                   value: _chosenTime,
                   items: cookingTimes.map((int value) {
-                    return new DropdownMenuItem<int>(
+                    return DropdownMenuItem<int>(
                       value: value,
-                      child: new Text(value.toString()),
+                      child: Text(value.toString()),
                     );
                   }).toList(),
                   onChanged: (newVal) {
@@ -132,9 +134,9 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                  decoration: InputDecoration(hintText: 'Wyszukaj składniki'),
+                  decoration: const InputDecoration(hintText: 'Wyszukaj składniki'),
                   controller: ingredientTec,),
-              Container(child: displayFromList(ingredientPattern, allIngredients, selectedIngredients), height: 120,)
+              SizedBox(height: 120,child: displayFromList(ingredientPattern, allIngredients, selectedIngredients),)
             ],
           )),
     );
@@ -152,7 +154,7 @@ class SearchState extends State<SearchPage> {
       {displayedList = listIn;}
     return ListView.separated(
         padding: const EdgeInsets.all(8),
-        separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
+        separatorBuilder: (BuildContext context, int Index) => const SizedBox(width: 10,),
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           return GestureDetector(
@@ -190,8 +192,8 @@ class SearchState extends State<SearchPage> {
             mainAxisAlignment: MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              Text('Wybrane'),
-              Container(child: displayChosen(selected), height: 120,)
+              const Text('Wybrane'),
+              SizedBox(height: 120,child: displayChosen(selected),)
             ],
           )),
     );
@@ -201,7 +203,7 @@ class SearchState extends State<SearchPage> {
   {
     return ListView.separated(
         padding: const EdgeInsets.all(8),
-        separatorBuilder: (BuildContext context, int Index) => SizedBox(width: 10,),
+        separatorBuilder: (BuildContext context, int Index) => const SizedBox(width: 10,),
         scrollDirection: Axis.horizontal,
         itemBuilder: (BuildContext context, int index) {
           return Container(
@@ -225,7 +227,7 @@ class SearchState extends State<SearchPage> {
                   height: 40,
                   width: 40,
                   decoration: BoxDecoration(borderRadius: BorderRadius.circular(6), border: Border.all(width: 1), color: Colors.red[200]),
-                  child: Icon(Icons.remove)
+                  child: const Icon(Icons.remove)
                 ),
                 )
               ],
@@ -250,9 +252,9 @@ class SearchState extends State<SearchPage> {
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
               TextField(
-                  decoration: InputDecoration(hintText: 'Wyszukaj cechę'),
+                  decoration: const InputDecoration(hintText: 'Wyszukaj cechę'),
                   controller: characteristicTec,),
-              Container(child: displayFromList(characteristicPattern, allCharacteristics, selectedCharacteristics), height: 120,)
+              SizedBox(height: 120,child: displayFromList(characteristicPattern, allCharacteristics, selectedCharacteristics),)
             ],
           )),
     );
@@ -260,7 +262,7 @@ class SearchState extends State<SearchPage> {
 
 TextButton searchButton()
 {
-  return TextButton(onPressed: (){}, child: Text('wyszukaj'));
+  return TextButton(onPressed: (){}, child: const Text('wyszukaj'));
 }
 
 
