@@ -14,6 +14,7 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   int selectedIndex = 0;
 
+  // switches index based on selected icon
   void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
@@ -42,48 +43,60 @@ class _MainViewState extends State<MainView> {
     }
 
     return Scaffold(
-      body: view,
-      appBar: AppBar(
-        backgroundColor: theme.appBarTheme.backgroundColor,
-        titleSpacing: 20.0,
-        title: Row(
-          children: [
-            Expanded(
-              child: Card(
-                color: theme.cardTheme.color,
-                child: Padding(
-                  padding: const EdgeInsets.only(top: 1.0, bottom: 1.0),
-                  child: Text(
-                    "Szef Kuchni", 
-                    style: style,
-                    textAlign: TextAlign.center,
-                  ),
-                )
-              ),
-            ),
-          ],
-        ),
-      ),
+      // TOP BAR
+      appBar: topBar(theme, style),
 
-      bottomNavigationBar: BottomNavigationBar(
-        backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
-        items: const <BottomNavigationBarItem>[
-          BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: "Home",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.search),
-            label: "Search",
-          ),
-          BottomNavigationBarItem(
-            icon: Icon(Icons.favorite),
-            label: "Favorites",
+      // MAIN BODY
+      body: view,
+
+      // BOTTOM NAVIGATION BAR
+      bottomNavigationBar: bottomNavigationBar(theme),
+    );
+  }
+
+  AppBar topBar(ThemeData theme, TextStyle style) {
+    return AppBar(
+      backgroundColor: theme.appBarTheme.backgroundColor,
+      titleSpacing: 20.0,
+      title: Row(
+        children: [
+          Expanded(
+            child: Card(
+              color: theme.cardTheme.color,
+              child: Padding(
+                padding: const EdgeInsets.only(top: 1.0, bottom: 1.0),
+                child: Text(
+                  "Szef Kuchni", 
+                  style: style,
+                  textAlign: TextAlign.center,
+                ),
+              )
+            ),
           ),
         ],
-        currentIndex: selectedIndex,
-        onTap: onItemTapped,
       ),
+    );
+  }
+
+  BottomNavigationBar bottomNavigationBar(ThemeData theme) {
+    return BottomNavigationBar(
+      backgroundColor: theme.bottomNavigationBarTheme.backgroundColor,
+      items: const <BottomNavigationBarItem>[
+        BottomNavigationBarItem(
+          icon: Icon(Icons.home),
+          label: "Home",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.search),
+          label: "Search",
+        ),
+        BottomNavigationBarItem(
+          icon: Icon(Icons.favorite),
+          label: "Favorites",
+        ),
+      ],
+      currentIndex: selectedIndex,
+      onTap: onItemTapped,
     );
   }
 }

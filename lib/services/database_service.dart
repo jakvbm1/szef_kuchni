@@ -6,6 +6,10 @@ import 'package:sqflite/sqflite.dart';
 import 'package:szef_kuchni_v2/models/name.dart';
 
 class DatabaseService {
+  //=====================================================
+  //============== CONNECTING TO DATABASE ===============
+  //=====================================================
+
   static Database? _db;
 
   Future<Database?> get db async {
@@ -28,6 +32,10 @@ class DatabaseService {
     var database = await openDatabase(path, version: 1);
     return database;
   }
+  
+  //=====================================================
+  //=================== FUNCTIONS =======================
+  //=====================================================
 
   Future<List<NameModel>> getRecipeNames({
     required int fromId, 
@@ -45,7 +53,6 @@ class DatabaseService {
     }
     return recipeNames;
   }
-
 
   Future<List<NameModel>> getFilteredResults(String enteredKeyword) async {
     var dbClient = await db;
@@ -85,7 +92,6 @@ class DatabaseService {
     }
     return recipeNames;
   }
-
 
   Future<List<String>> getIngredientsNames() async {
     var dbClient = await db;

@@ -10,23 +10,41 @@ class AllRecipesView extends StatefulWidget{
 }
 
 class _AllRecipesViewState extends State<AllRecipesView> {
+  //=====================================================
+  //================== VARIABLES ========================
+  //=====================================================
+  
+  // Use this to import databaseService functionality
   final DatabaseService databaseService = DatabaseService();
+  // Sets a trigger that is used to load more recipes with pagination
   final ScrollController _scrollController = ScrollController();
+  // List of recipes that are displayed in the view
   List<NameModel> _recipes = [];
+  // List of all ingredients names
   List<String> _ingredientsNames = [];
+  // List of all categories names
   List<String> _categoriesNames = [];
+
+  // Pagination variables
   bool _isLoading = false;
   bool _hasMore = true;
-  bool expansionPanelState = false;
   int _lastLoadedId = 0;
   static const int _batchSize = 40;
 
-  // flitering parameters
+  // State of filters expansion panel
+  bool expansionPanelState = false;
+
+  // fliter parameters for searching recipes
   final int _minTime = 0;
   final int _maxTime = 0;
   final List<String> _selectedIngredients = [];
   final List<String> _selectedCategories = [];
 
+  //=====================================================
+  //================== FUNCTIONS ========================
+  //=====================================================
+
+  // Called when the view is created
   @override
   void initState() {
     super.initState();
@@ -36,6 +54,24 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     _loadCategoriesNames();
   }
 
+  // Called when the view is destroyed
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
+
+  // loads all the ingredient names
+  Future<void> _loadIngredientsNames() async {
+    _ingredientsNames = await databaseService.getIngredientsNames();
+  }
+
+  // loads all the category names
+  Future<void> _loadCategoriesNames() async {
+    _categoriesNames = await databaseService.getCategoriesNames();
+  }
+
+  // Called when the _scrollController trigger is activated
   void _onScroll() {
     if (_scrollController.position.pixels >= 
         _scrollController.position.maxScrollExtent * 0.8) {
@@ -43,14 +79,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     }
   }
 
-  Future<void> _loadIngredientsNames() async {
-    _ingredientsNames = await databaseService.getIngredientsNames();
-  }
-
-  Future<void> _loadCategoriesNames() async {
-    _categoriesNames = await databaseService.getCategoriesNames();
-  }
-
+  // loads more recipes when _onScroll is called
   Future<void> _loadMoreRecipes() async {
     if (_isLoading || !_hasMore) return;
 
@@ -72,7 +101,10 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     });
   }
 
-  Future<void> _loadSearchResults(String enteredKeyword) async {
+  // displays search results based on keyword entered in searchbar,
+  // replaces the current list of recipee names with the new one
+  // is called every time a new letter is typed in searchbar
+  Future<void> _displaySearchResults(String enteredKeyword) async {
     setState(() {
       _isLoading = true;
       _recipes.clear(); // Clear existing recipes
@@ -88,193 +120,32 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     });
   }
 
+  //=====================================================
+  //================== COMPONENTS =======================
+  //=====================================================
+
+  // MAIN BUILD FUNCTION
   @override
   Widget build(BuildContext context) {
     var theme = Theme.of(context);
     
+    // LayoutBuilder is used to get the height of the view
+    // height is used to determine the height of the filter panel
+    // i dont like this and i want to change it later
     return LayoutBuilder(
       builder: (BuildContext context, BoxConstraints constraints) {
         double viewHeight = constraints.maxHeight;
         return Scaffold(
           backgroundColor: theme.colorScheme.secondaryContainer,
+          // MAIN COLUMN
           body: Column(
             children: <Widget>[
-              Padding(
-                padding: const EdgeInsets.only(top: 8, bottom: 8),
-                child: Card(
-                  child: Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: TextField(
-                      onChanged:(value) => _loadSearchResults(value),
-                      decoration: const InputDecoration(
-                        label: Text(
-                          "Wyszukaj po nazwie",
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        suffixIcon: Icon(Icons.search),
-                      ),
-                    ),
-                  ),
-                ),
-              ),
-              ExpansionPanelList(
-                children: [
-                  ExpansionPanel(
-                    backgroundColor: theme.colorScheme.surfaceContainerHigh,
-                    headerBuilder: (context, isOpen) {
-                      return const ListTile(
-                        title: Text(
-                          "Filtry",
-                          style: TextStyle(
-                            fontSize: 20,
-                          ),
-                        ),
-                        visualDensity: VisualDensity.compact,
-                      );
-                    },
-                    isExpanded: expansionPanelState,
-                    body: SizedBox(
-                      height: viewHeight * 0.75,
-                      child: SingleChildScrollView(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Container(
-                              width: constraints.maxWidth,
-                              margin: const EdgeInsets.all(5.0),
-                              padding: const EdgeInsets.all(3.0),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  top: BorderSide(
-                                    color: theme.colorScheme.onSurface,
-                                  )
-                                ),
-                              ),
-                              child: const Row(
-                                children: [
-                                  Padding(
-                                    padding: EdgeInsets.all(8.0),
-                                    child: Text("Czas przygotowania"),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: TextField(
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          label: Text(
-                                            "Od",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),
-                                  SizedBox(width: 8),
-                                  Expanded(
-                                    child: Padding(
-                                      padding: EdgeInsets.all(8.0),
-                                      child: TextField(
-                                        keyboardType: TextInputType.number,
-                                        decoration: InputDecoration(
-                                          isDense: true,
-                                          label: Text(
-                                            "Do",
-                                            style: TextStyle(
-                                              fontSize: 14,
-                                            ),
-                                          ),
-                                          border: OutlineInputBorder(),
-                                        ),
-                                      ),
-                                    ),
-                                  ),                        
-                                ],
-                              ),
-                            ),
-                            Container(
-                              width: constraints.maxWidth,
-                              margin: const EdgeInsets.all(5.0),
-                              padding: const EdgeInsets.all(3.0),
-                              decoration: BoxDecoration(
-                                border: Border.symmetric(
-                                  horizontal: BorderSide(
-                                    color: theme.colorScheme.onSurface,
-                                  )
-                                ),
-                              ),
-                              child: filterComponentWithSearchBar(theme, "Składniki", _ingredientsNames, _selectedIngredients),
-                            ),
-                            Container(
-                              width: constraints.maxWidth,
-                              margin: const EdgeInsets.all(5.0),
-                              padding: const EdgeInsets.all(3.0),
-                              decoration: BoxDecoration(
-                                border: Border(
-                                  bottom: BorderSide(
-                                    color: theme.colorScheme.onSurface,
-                                  )
-                                )
-                              ),
-                              child: filterComponentWithSearchBar(theme, "Kategorie", _categoriesNames, _selectedCategories),
-                            )
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-                expansionCallback: (panelIndex, isExpanded) {
-                  setState(() {
-                    expansionPanelState = !expansionPanelState;
-                  });
-                },
-              ),
-              Expanded(
-                child: Padding(
-                  padding: const EdgeInsets.all(5.0),
-                  child: Card(
-                    color: theme.colorScheme.surfaceContainerHigh,
-                    child: ListView.builder(
-                      controller: _scrollController,
-                      itemCount: _recipes.length + (_hasMore ? 1 : 0),
-                      itemBuilder: (context, index) {
-                        if (index >= _recipes.length) {
-                          return const Center(
-                            child: Padding(
-                              padding: EdgeInsets.all(16),
-                              child: CircularProgressIndicator(),
-                            ),
-                          );
-                        }
-                        return Padding(
-                          padding: const EdgeInsets.all(15.0),
-                          child: Card(
-                            color: theme.colorScheme.surface,
-                            child: Padding(
-                              padding: const EdgeInsets.all(18.0),
-                              child: Text(
-                                _recipes[index].name,
-                                style: TextStyle(
-                                  fontSize: 18,
-                                  color: theme.colorScheme.onSurface,
-                                ),
-                              ),
-                            ),
-                          ),
-                        );
-                      },
-                    ),
-                  ),
-                ),
-              ),
+
+              searchBar(),
+
+              filtersExpandablePanel(theme, viewHeight, constraints),
+
+              recipesDisplay(theme),
             ]
           ),
         );
@@ -282,8 +153,177 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     );
   }
 
-  // WIDOK FILTRU Z WYSZUKIWARKĄ
-  Column filterComponentWithSearchBar(ThemeData theme, String labelName, List<String> autocompeteDataList, List<String> selectedDataList) {
+  // MAIN SEARCH BAR
+  Padding searchBar() {
+    return Padding(
+              padding: const EdgeInsets.only(top: 8, bottom: 8),
+              child: Card(
+                child: Padding(
+                  padding: const EdgeInsets.all(8.0),
+                  child: TextField(
+                    onChanged:(value) => _displaySearchResults(value),
+                    decoration: const InputDecoration(
+                      label: Text(
+                        "Wyszukaj po nazwie",
+                        style: TextStyle(
+                          fontSize: 20,
+                        ),
+                      ),
+                      suffixIcon: Icon(Icons.search),
+                    ),
+                  ),
+                ),
+              ),
+            );
+  }
+
+  // FILTERS PANEL
+  ExpansionPanelList filtersExpandablePanel(ThemeData theme, double viewHeight, BoxConstraints constraints) {
+    return ExpansionPanelList(
+      children: [
+        ExpansionPanel(
+          backgroundColor: theme.colorScheme.surfaceContainerHigh,
+          headerBuilder: (context, isOpen) {
+            return const ListTile(
+              title: Text(
+                "Filtry",
+                style: TextStyle(
+                  fontSize: 20,
+                ),
+              ),
+              visualDensity: VisualDensity.compact,
+            );
+          },
+          isExpanded: expansionPanelState,
+
+          // BODY OF FILTER SETTINGS PANEL
+          body: SizedBox(
+            height: viewHeight * 0.75, // it needs to be a fixed height, code breaks otherwise
+            child: SingleChildScrollView(
+
+              // MAIN FILTER SETTINGS COLUMN
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+
+                  // TIME SETTING OBJECT
+                  Container(
+                    width: constraints.maxWidth,
+                    margin: const EdgeInsets.all(5.0),
+                    padding: const EdgeInsets.all(3.0),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        top: BorderSide(
+                          color: theme.colorScheme.onSurface,
+                        )
+                      ),
+                    ),
+                    child: const Row(
+                      children: [
+                        Padding(
+                          padding: EdgeInsets.all(8.0),
+                          child: Text("Czas przygotowania"),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                label: Text(
+                                  "Od",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ),
+                        SizedBox(width: 8),
+                        Expanded(
+                          child: Padding(
+                            padding: EdgeInsets.all(8.0),
+                            child: TextField(
+                              keyboardType: TextInputType.number,
+                              decoration: InputDecoration(
+                                isDense: true,
+                                label: Text(
+                                  "Do",
+                                  style: TextStyle(
+                                    fontSize: 14,
+                                  ),
+                                ),
+                                border: OutlineInputBorder(),
+                              ),
+                            ),
+                          ),
+                        ),                        
+                      ],
+                    ),
+                  ),
+
+                  // INGREDIENTS SETTING OBJECT
+                  Container(
+                    width: constraints.maxWidth,
+                    margin: const EdgeInsets.all(5.0),
+                    padding: const EdgeInsets.all(3.0),
+                    decoration: BoxDecoration(
+                      border: Border.symmetric(
+                        horizontal: BorderSide(
+                          color: theme.colorScheme.onSurface,
+                        )
+                      ),
+                    ),
+                    child: filterComponentWithSearchBar(theme, "Składniki", "wyszukaj składnik", _ingredientsNames, _selectedIngredients),
+                  ),
+                  
+                  // CATEGORIES SETTING OBJECT
+                  Container(
+                    width: constraints.maxWidth,
+                    margin: const EdgeInsets.all(5.0),
+                    padding: const EdgeInsets.all(3.0),
+                    decoration: BoxDecoration(
+                      border: Border(
+                        bottom: BorderSide(
+                          color: theme.colorScheme.onSurface,
+                        )
+                      )
+                    ),
+                    child: filterComponentWithSearchBar(theme, "Kategorie", "wyszukaj kategorie", _categoriesNames, _selectedCategories),
+                  ),
+
+                  // APPLY FILTERS BUTTON
+                  ElevatedButton(
+                    onPressed: (){}, 
+                    child: const Text(
+                      "Zastosuj filtry",
+                      style: TextStyle(
+                        fontSize: 20,
+                      ),
+                    )
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ],
+      expansionCallback: (panelIndex, isExpanded) {
+        setState(() {
+          expansionPanelState = !expansionPanelState;
+        });
+      },
+    );
+  }
+  
+  // FILTERS PANEL COMPONENT - FILTER COMPONENT WITH SEARCH BAR
+  // Ingredients filter component and category filter component were basically the same
+  // so i made a function that efficiently creates them with only few given parameters
+  Column filterComponentWithSearchBar(ThemeData theme, String labelName, String hintLabelName, List<String> autocompeteDataList, List<String> selectedDataList) {
     late TextEditingController textEditingController;
 
     return Column(
@@ -324,7 +364,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                       decoration: InputDecoration(
                         border: const OutlineInputBorder(),
                         isDense: true,
-                        hintText: "wyszukaj składnik",
+                        hintText: hintLabelName,
                         hintStyle: TextStyle(
                           fontSize: 14,
                           color: theme.colorScheme.onSurface.withOpacity(0.5),
@@ -358,9 +398,51 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     );
   }
 
-  @override
-  void dispose() {
-    _scrollController.dispose();
-    super.dispose();
+  // MAIN RECIPES DISPLAY
+  Expanded recipesDisplay(ThemeData theme) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Card(
+          color: theme.colorScheme.surfaceContainerHigh,
+          child: ListView.builder(
+            controller: _scrollController,
+            itemCount: _recipes.length + (_hasMore ? 1 : 0),
+            itemBuilder: (context, index) {
+
+              // Displays loading indicator when loading from database is not finished
+              // im not sure if it works correctly
+              if (index >= _recipes.length) {
+                return const Center(
+                  child: Padding(
+                    padding: EdgeInsets.all(16),
+                    child: CircularProgressIndicator(),
+                  ),
+                );
+              }
+
+              // Displays recipe object
+              // this need to be changed to a recipe button that opens a recipe view
+              return Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Card(
+                  color: theme.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: Text(
+                      _recipes[index].name,
+                      style: TextStyle(
+                        fontSize: 18,
+                        color: theme.colorScheme.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
+              );
+            },
+          ),
+        ),
+      ),
+    );
   }
 }
