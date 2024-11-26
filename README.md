@@ -1,4 +1,4 @@
-# szef_kuchni
+# szef_kuchni_v2
 
 A new Flutter project.
 
