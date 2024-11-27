@@ -38,58 +38,67 @@ class DatabaseService {
   //=====================================================
 
   Future<List<NameModel>> getRecipeNames({
-    required int fromId, 
-    required int toId
+    required int batchNumber,
+    required int batchSize,
+    required int minTime,
+    required int maxTime,
+    required List<String> selectedIngredients,
+    required List<String> selectedCategories,
+    String? enteredKeyword,
   }) async {
     var dbClient = await db;
     List<NameModel> recipeNames = [];
-    List<Map> rawQuery = await dbClient!.rawQuery(
-      'SELECT id, name FROM recipes WHERE id BETWEEN ? AND ?',
-      [fromId, toId]
-    );
-    
-    for(int i = 0; i < rawQuery.length; i++) {
-      recipeNames.add(NameModel(rawQuery[i]["id"], rawQuery[i]["name"]));
-    }
-    return recipeNames;
-  }
 
-  Future<List<NameModel>> getFilteredResults(String enteredKeyword) async {
-    var dbClient = await db;
-    String keyword = enteredKeyword.toLowerCase();
-    
-    // Create letter swap variations
-    List<String> variations = [keyword];
-    for (int i = 0; i < keyword.length - 1; i++) {
-      var chars = keyword.split('');
-      var temp = chars[i];
-      chars[i] = chars[i + 1];
-      chars[i + 1] = temp;
-      variations.add(chars.join());
+    // Base query
+    String query = '''
+      SELECT DISTINCT r.id, r.name 
+      FROM recipes r
+      LEFT JOIN ingredients_linking il ON r.id = il.recipe_id
+      LEFT JOIN ingredients i ON il.ingredient_id = i.id
+      LEFT JOIN tags_linking tl ON r.id = tl.recipe_id
+      LEFT JOIN tags t ON tl.tag_id = t.id
+      WHERE 1=1
+    ''';
+    List<dynamic> params = [];
+
+    // Add filters if present
+    if (minTime > 0) {
+      query += ' AND r.minutes >= ?';
+      params.add(minTime);
     }
-    
-    String whereClause = variations.map((v) => 'LOWER(name) LIKE ?').join(' OR ');
-    List<String> params = variations.map((v) => '%$v%').toList();
-    
-    params.addAll([keyword, '$keyword%']);
-    
-    List<Map> rawQuery = await dbClient!.rawQuery(
-      '''SELECT id, name FROM recipes 
-         WHERE $whereClause
-         ORDER BY 
-           CASE 
-             WHEN LOWER(name) = ? THEN 1
-             WHEN LOWER(name) LIKE ? THEN 2
-             ELSE 3
-           END
-         LIMIT 40''',
-      params
-    );
-    
-    List<NameModel> recipeNames = [];
-    for(int i = 0; i < rawQuery.length; i++) {
+    if (maxTime > 0) {
+      query += ' AND r.minutes <= ?';
+      params.add(maxTime);
+    }
+    if (selectedIngredients.isNotEmpty) {
+      String ingredientsFilter = selectedIngredients.map((_) => 'i.name LIKE ?').join(' OR ');
+      query += ' AND ($ingredientsFilter)';
+      params.addAll(selectedIngredients.map((ingredient) => '%$ingredient%'));
+    }
+    if (selectedCategories.isNotEmpty) {
+      String categoriesFilter = selectedCategories.map((_) => 't.name LIKE ?').join(' OR ');
+      query += ' AND ($categoriesFilter)';
+      params.addAll(selectedCategories.map((category) => '%$category%'));
+    }
+    if (enteredKeyword != null && enteredKeyword.isNotEmpty) {
+      query += ' AND r.name LIKE ?';
+      params.add('%$enteredKeyword%');
+    }
+
+    // Add LIMIT and OFFSET for batching
+    int offset = (batchNumber - 1) * batchSize;
+    query += ' LIMIT ? OFFSET ?';
+    params.add(batchSize);
+    params.add(offset);
+
+    // Execute the query
+    List<Map> rawQuery = await dbClient!.rawQuery(query, params);
+
+    // Process the results
+    for (int i = 0; i < rawQuery.length; i++) {
       recipeNames.add(NameModel(rawQuery[i]["id"], rawQuery[i]["name"]));
     }
+
     return recipeNames;
   }
 

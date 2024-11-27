@@ -28,15 +28,15 @@ class _AllRecipesViewState extends State<AllRecipesView> {
   // Pagination variables
   bool _isLoading = false;
   bool _hasMore = true;
-  int _lastLoadedId = 0;
+  int _batchNumber = 0;
   static const int _batchSize = 40;
 
   // State of filters expansion panel
   bool expansionPanelState = false;
 
   // fliter parameters for searching recipes
-  final int _minTime = 0;
-  final int _maxTime = 0;
+  int _minTime = 0;
+  int _maxTime = 0;
   final List<String> _selectedIngredients = [];
   final List<String> _selectedCategories = [];
 
@@ -86,8 +86,12 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     setState(() => _isLoading = true);
 
     final newRecipes = await databaseService.getRecipeNames(
-      fromId: _lastLoadedId + 1,
-      toId: _lastLoadedId + _batchSize
+      batchNumber: _batchNumber,
+      batchSize: _batchSize,
+      minTime: _minTime,
+      maxTime: _maxTime,
+      selectedIngredients: _selectedIngredients,
+      selectedCategories: _selectedCategories,
     );
     
     setState(() {
@@ -95,7 +99,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
         _hasMore = false;
       } else {
         _recipes.addAll(newRecipes);
-        _lastLoadedId = newRecipes.last.id;
+        _batchNumber += 1;
       }
       _isLoading = false;
     });
@@ -110,13 +114,21 @@ class _AllRecipesViewState extends State<AllRecipesView> {
       _recipes.clear(); // Clear existing recipes
     });
 
-    final newRecipes = await databaseService.getFilteredResults(enteredKeyword);
+    final newRecipes = await databaseService.getRecipeNames(
+      batchNumber: _batchNumber,
+      batchSize: _batchSize,
+      minTime: _minTime,
+      maxTime: _maxTime,
+      selectedIngredients: _selectedIngredients,
+      selectedCategories: _selectedCategories,
+      enteredKeyword: enteredKeyword,
+    );
     
     setState(() {
       _recipes = newRecipes;
       _isLoading = false;
       _hasMore = false; // Disable pagination for search results
-      _lastLoadedId = 0; // Reset pagination counter
+      _batchNumber = 0; // Reset pagination counter
     });
   }
 
@@ -218,19 +230,20 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                         )
                       ),
                     ),
-                    child: const Row(
+                    child: Row(
                       children: [
-                        Padding(
+                        const Padding(
                           padding: EdgeInsets.all(8.0),
                           child: Text("Czas przygotowania"),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: TextField(
                               keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
+                              onChanged: (value) => _minTime = int.parse(value),
+                              decoration: const InputDecoration(
                                 isDense: true,
                                 label: Text(
                                   "Od",
@@ -243,13 +256,20 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                             ),
                           ),
                         ),
-                        SizedBox(width: 8),
+                        const SizedBox(width: 8),
                         Expanded(
                           child: Padding(
-                            padding: EdgeInsets.all(8.0),
+                            padding: const EdgeInsets.all(8.0),
                             child: TextField(
                               keyboardType: TextInputType.number,
-                              decoration: InputDecoration(
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  _maxTime = 0; // or any default value you prefer
+                                } else {
+                                  _maxTime = int.parse(value);
+                                }
+                              },
+                              decoration: const InputDecoration(
                                 isDense: true,
                                 label: Text(
                                   "Do",
@@ -261,7 +281,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                               ),
                             ),
                           ),
-                        ),                        
+                        ),
                       ],
                     ),
                   ),
@@ -298,7 +318,14 @@ class _AllRecipesViewState extends State<AllRecipesView> {
 
                   // APPLY FILTERS BUTTON
                   ElevatedButton(
-                    onPressed: (){}, 
+                    onPressed: (){
+                      setState(() {
+                        _recipes.clear();
+                        _batchNumber = 0;
+                        _loadMoreRecipes();
+                        expansionPanelState = false;
+                      });
+                    }, 
                     child: const Text(
                       "Zastosuj filtry",
                       style: TextStyle(
@@ -385,12 +412,30 @@ class _AllRecipesViewState extends State<AllRecipesView> {
           spacing: 8,
           runSpacing: 8,
           children: selectedDataList.map((object) => Card(
-            child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-              child: Text(
-                object,
-                textAlign: TextAlign.center,
-              ),
+            child: Row(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+                  child: Text(
+                    object,
+                    textAlign: TextAlign.center,
+                  ),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    setState(() {
+                      selectedDataList.remove(object);
+                      if (labelName == "Składniki") {
+                        _selectedIngredients.remove(object);
+                      } else if (labelName == "Kategorie") {
+                        _selectedCategories.remove(object);
+                      }
+                    });
+                  },
+                  child: const Icon(Icons.close),
+                ),
+              ],
             ),
           )).toList(),
         ),
@@ -418,7 +463,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                     padding: EdgeInsets.all(16),
                     child: CircularProgressIndicator(),
                   ),
-                );
+                ); 
               }
 
               // Displays recipe object
