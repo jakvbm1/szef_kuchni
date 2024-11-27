@@ -3,7 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
 import 'package:sqflite/sqflite.dart';
-import 'package:szef_kuchni_v2/models/name.dart';
+import 'package:szef_kuchni_v2/models/recipe_model.dart';
 
 class DatabaseService {
   //=====================================================
@@ -37,7 +37,7 @@ class DatabaseService {
   //=================== FUNCTIONS =======================
   //=====================================================
 
-  Future<List<NameModel>> getRecipeNames({
+  Future<List<Recipe>> getRecipeNames({
     required int batchNumber,
     required int batchSize,
     required int minTime,
@@ -47,11 +47,11 @@ class DatabaseService {
     String? enteredKeyword,
   }) async {
     var dbClient = await db;
-    List<NameModel> recipeNames = [];
+    List<Recipe> recipeNames = [];
 
     // Base query
     String query = '''
-      SELECT DISTINCT r.id, r.name 
+      SELECT DISTINCT r.id, r.name, r.minutes, r.nutrition, r.steps
       FROM recipes r
       LEFT JOIN ingredients_linking il ON r.id = il.recipe_id
       LEFT JOIN ingredients i ON il.ingredient_id = i.id
@@ -96,7 +96,13 @@ class DatabaseService {
 
     // Process the results
     for (int i = 0; i < rawQuery.length; i++) {
-      recipeNames.add(NameModel(rawQuery[i]["id"], rawQuery[i]["name"]));
+      recipeNames.add(Recipe(
+        id: rawQuery[i]["id"],
+        name: rawQuery[i]["name"],
+        minutes: rawQuery[i]["minutes"],
+        nutrition: rawQuery[i]["nutrition"],
+        steps: rawQuery[i]["steps"],
+      ));
     }
 
     return recipeNames;

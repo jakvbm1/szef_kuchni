@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:szef_kuchni_v2/models/name.dart';
+import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
 
 class AllRecipesView extends StatefulWidget{
@@ -19,7 +19,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
   // Sets a trigger that is used to load more recipes with pagination
   final ScrollController _scrollController = ScrollController();
   // List of recipes that are displayed in the view
-  List<NameModel> _recipes = [];
+  List<Recipe> _recipes = [];
   // List of all ingredients names
   List<String> _ingredientsNames = [];
   // List of all categories names
@@ -443,7 +443,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     );
   }
 
-  // MAIN RECIPES DISPLAY
+  // MAIN RECIPES: DISPLAY
   Expanded recipesDisplay(ThemeData theme) {
     return Expanded(
       child: Padding(
@@ -466,7 +466,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                 ); 
               }
 
-              // Displays recipe object
+              // Displays recipe tiles
               // this need to be changed to a recipe button that opens a recipe view
               return Padding(
                 padding: const EdgeInsets.all(15.0),
@@ -474,13 +474,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                   color: theme.colorScheme.surface,
                   child: Padding(
                     padding: const EdgeInsets.all(18.0),
-                    child: Text(
-                      _recipes[index].name,
-                      style: TextStyle(
-                        fontSize: 18,
-                        color: theme.colorScheme.onSurface,
-                      ),
-                    ),
+                    child: recipeTile(index, theme),
                   ),
                 ),
               );
@@ -488,6 +482,19 @@ class _AllRecipesViewState extends State<AllRecipesView> {
           ),
         ),
       ),
+    );
+  }
+
+  // MAIN RECIPES: RECIPE TILE
+  Column recipeTile(int index, ThemeData theme) {
+    return Column(
+      children: [
+        Text(_recipes[index].id.toString(),),
+        Text(_recipes[index].name,),
+        Text(_recipes[index].minutes.toString(),),
+        Text(_recipes[index].nutrition,),
+        Text(_recipes[index].steps,),
+      ],
     );
   }
 }
