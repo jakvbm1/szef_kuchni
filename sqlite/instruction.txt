@@ -1,6 +1,0 @@
-1. Wejdź w sqlite3.exe
-2. .mode csv
-3. .import ready.csv recipes
-3. .save mydb.db
-
-gotowa baza danych
