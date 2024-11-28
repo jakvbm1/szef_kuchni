@@ -4,8 +4,7 @@ class Recipe {
   final String name;
   final String nutrition;
   final String steps;
-  bool isFavourite;
-  List<String> stepsList = [];
+  final bool isFavourite;
 
   Recipe({
     required this.id,
@@ -14,24 +13,5 @@ class Recipe {
     required this.nutrition,
     required this.steps,
     required this.isFavourite,
-  }) {
-    if (steps.isNotEmpty) {
-      stepsList = steps.split(", ");
-      for (int i = 0; i < stepsList.length; i++) {
-        stepsList[i] = stepsList[i]
-            .replaceAll('[', '')
-            .replaceAll(']', '')
-            .replaceAll('\'', '')
-            .trim();
-      }
-    }
-
-    if (isFavourite) {
-      isFavourite = true;
-    }
-  }
-
-  void changeFavourite() {
-    isFavourite = !isFavourite;
-  }
+  });
 }

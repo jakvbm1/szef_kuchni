@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
-import 'package:szef_kuchni_v2/views/recipe_view.dart';
 
 class AllRecipesView extends StatefulWidget{
   const AllRecipesView({super.key});
@@ -469,18 +468,15 @@ class _AllRecipesViewState extends State<AllRecipesView> {
 
               // Displays recipe tiles
               // this need to be changed to a recipe button that opens a recipe view
-              return GestureDetector(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Card(
-                    color: theme.colorScheme.surface,
-                    child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: recipeTile(index, theme),
-                    ),
+              return Padding(
+                padding: const EdgeInsets.all(15.0),
+                child: Card(
+                  color: theme.colorScheme.surface,
+                  child: Padding(
+                    padding: const EdgeInsets.all(18.0),
+                    child: recipeTile(index, theme),
                   ),
                 ),
-                onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeView(recipe: _recipes[index])));},
               );
             },
           ),
