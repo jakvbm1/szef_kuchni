@@ -4,6 +4,7 @@ class Recipe {
   final String name;
   final String nutrition;
   final String steps;
+  final bool isFavourite;
 
   Recipe({
     required this.id,
@@ -11,5 +12,6 @@ class Recipe {
     required this.minutes,
     required this.nutrition,
     required this.steps,
+    required this.isFavourite,
   });
 }

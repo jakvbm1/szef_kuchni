@@ -22,14 +22,33 @@ class DatabaseService {
     io.Directory documentsDirectory = await getApplicationDocumentsDirectory();
     String path = join(documentsDirectory.path, "master_db.db");
     bool dbExists = await io.File(path).exists();
+    
     if (!dbExists) {
+      // Copy database from assets
       ByteData data = await rootBundle.load(join("assets","master_db.db"));
       List<int> bytes = data.buffer.asUint8List(data.offsetInBytes, data.lengthInBytes);
-
       await io.File(path).writeAsBytes(bytes, flush: true);
     }
 
-    var database = await openDatabase(path, version: 1);
+    var database = await openDatabase(
+      path, 
+      version: 2, // Increment version number on database upgrade
+      onUpgrade: (db, oldVersion, newVersion) async {
+        //=========== HANDLE DATABASE UPGRADES ============
+        // Example:
+        // if (oldVersion < 2) {
+        //   // Create favourites table if it doesn't exist
+        //   await db.execute('''
+        //     CREATE TABLE IF NOT EXISTS favourites (
+        //       id INTEGER PRIMARY KEY AUTOINCREMENT,
+        //       recipe_id INTEGER,
+        //       is_favourite INTEGER DEFAULT 0,
+        //       FOREIGN KEY (recipe_id) REFERENCES recipes (id)
+        //     )
+        //   ''');
+        // }
+      }
+    );
     return database;
   }
   
@@ -51,12 +70,14 @@ class DatabaseService {
 
     // Base query
     String query = '''
-      SELECT DISTINCT r.id, r.name, r.minutes, r.nutrition, r.steps
+      SELECT DISTINCT r.id, r.name, r.minutes, r.nutrition, r.steps, 
+             COALESCE(f.is_favourite, 0) as is_favourite
       FROM recipes r
       LEFT JOIN ingredients_linking il ON r.id = il.recipe_id
       LEFT JOIN ingredients i ON il.ingredient_id = i.id
       LEFT JOIN tags_linking tl ON r.id = tl.recipe_id
       LEFT JOIN tags t ON tl.tag_id = t.id
+      LEFT JOIN favourites f ON r.id = f.recipe_id
       WHERE 1=1
     ''';
     List<dynamic> params = [];
@@ -102,6 +123,7 @@ class DatabaseService {
         minutes: rawQuery[i]["minutes"],
         nutrition: rawQuery[i]["nutrition"],
         steps: rawQuery[i]["steps"],
+        isFavourite: rawQuery[i]["is_favourite"] == 1,  // Convert integer to boolean
       ));
     }
 

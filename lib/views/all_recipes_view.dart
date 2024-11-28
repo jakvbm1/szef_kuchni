@@ -489,11 +489,12 @@ class _AllRecipesViewState extends State<AllRecipesView> {
   Column recipeTile(int index, ThemeData theme) {
     return Column(
       children: [
-        Text(_recipes[index].id.toString(),),
+       // Text(_recipes[index].id.toString(),),
         Text(_recipes[index].name,),
-        Text(_recipes[index].minutes.toString(),),
-        Text(_recipes[index].nutrition,),
-        Text(_recipes[index].steps,),
+        //Text(_recipes[index].minutes.toString(),),
+        //Text(_recipes[index].nutrition,),
+        //Text(_recipes[index].steps,),
+        Text(_recipes[index].isFavourite.toString(),),
       ],
     );
   }
