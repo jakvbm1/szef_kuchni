@@ -1,6 +1,6 @@
 {
-    "name": "szef_kuchni",
-    "short_name": "szef_kuchni",
+    "name": "szef_kuchni_v2",
+    "short_name": "szef_kuchni_v2",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
