@@ -69,6 +69,7 @@ class DatabaseService {
     List<Recipe> recipeNames = [];
 
     // Base query
+    //tutaj po r.steps bylo jeszcze r.favourite i wywalal ze nie ma takiej kolumny a ja dodalem w db
     String query = '''
       SELECT DISTINCT r.id, r.name, r.minutes, r.nutrition, r.steps, 
              COALESCE(f.is_favourite, 0) as is_favourite

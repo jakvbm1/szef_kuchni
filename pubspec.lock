@@ -360,7 +360,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.2.5"
-  web:
+  xdg_directories:
     dependency: transitive
     description:
       name: xdg_directories
