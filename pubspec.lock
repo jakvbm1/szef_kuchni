@@ -288,7 +288,7 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "14.2.5"
-  xdg_directories:
+  web:
     dependency: transitive
     description:
       name: web
