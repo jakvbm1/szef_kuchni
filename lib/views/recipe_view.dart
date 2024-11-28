@@ -1,12 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 
-class RecipeView extends StatelessWidget
+class RecipeView extends StatefulWidget
 {
   
   Recipe recipe;
 
   RecipeView({required this.recipe});
+
+  @override
+  State<RecipeView> createState() => _RecipeViewState(recipe: recipe);
+}
+
+class _RecipeViewState extends State<RecipeView> {
+
+  Recipe recipe;
+  _RecipeViewState({required this.recipe});
 
   @override
   Widget build(BuildContext context) {
@@ -30,11 +39,21 @@ class RecipeView extends StatelessWidget
     return AppBar
     (
       title: Text(
-        recipe.name),
+        widget.recipe.name),
         actions: <Widget>[
           IconButton(
-            icon: const Icon(Icons.thumb_up),
-            onPressed: (){ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('not implemented yet ;p')));},
+            icon: Icon(Icons.thumb_up, color: recipe.favourite?Colors.blueAccent:Colors.black),
+            onPressed: (){
+              setState(() {
+                recipe.changeFavourite();
+              });
+
+              String displayedText;
+              if(recipe.favourite) {displayedText = 'added to favourites!';}
+              else {displayedText = 'removed from favourites!';}
+
+              ScaffoldMessenger.of(context).showSnackBar( SnackBar(content: Text(displayedText)));
+              },
             ),
              
         ]
@@ -45,16 +64,16 @@ class RecipeView extends StatelessWidget
 
   Padding foodStats()
   {
-    List<String> nutrients = recipe.nutrition.replaceAll('[', '').replaceAll(']', '').trim().split(", ");
+    List<String> nutrients = widget.recipe.nutrition.replaceAll('[', '').replaceAll(']', '').trim().split(", ");
 
     String time;
-    if(recipe.minutes < 60){time = recipe.minutes.toString() + ' min';}
+    if(widget.recipe.minutes < 60){time = widget.recipe.minutes.toString() + ' min';}
     else
     {
-      time = "${(recipe.minutes / 60).toInt()}h ";
-      if (recipe.minutes % 60 != 0)
+      time = "${(widget.recipe.minutes / 60).toInt()}h ";
+      if (widget.recipe.minutes % 60 != 0)
       {
-        time += "${recipe.minutes % 60}min";
+        time += "${widget.recipe.minutes % 60}min";
       }
     }
 
@@ -95,7 +114,7 @@ class RecipeView extends StatelessWidget
   return ListView.separated(
 
     separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10),
-    itemCount: recipe.stepsList.length,
+    itemCount: widget.recipe.stepsList.length,
     scrollDirection: Axis.vertical,
     itemBuilder: (BuildContext context, int index)
     {
@@ -114,7 +133,7 @@ class RecipeView extends StatelessWidget
               ),
               child: Text
               (
-                recipe.stepsList[index],
+                widget.recipe.stepsList[index],
                 textAlign: TextAlign.center,
                 style: const TextStyle
                 (
@@ -130,6 +149,4 @@ class RecipeView extends StatelessWidget
     },
       );
  }
-  
-  
 }

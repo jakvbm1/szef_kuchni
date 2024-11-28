@@ -52,7 +52,7 @@ class DatabaseService {
     // Base query
     //tutaj po r.steps bylo jeszcze r.favourite i wywalal ze nie ma takiej kolumny a ja dodalem w db
     String query = '''
-      SELECT DISTINCT r.id, r.name, r.minutes, r.nutrition, r.steps
+      SELECT DISTINCT r.id, r.name, r.minutes, r.nutrition, r.steps, r.favourite
       FROM recipes r
       LEFT JOIN ingredients_linking il ON r.id = il.recipe_id
       LEFT JOIN ingredients i ON il.ingredient_id = i.id
@@ -103,7 +103,7 @@ class DatabaseService {
         minutes: rawQuery[i]["minutes"],
         nutrition: rawQuery[i]["nutrition"],
         steps: rawQuery[i]["steps"],
-        //fav: rawQuery[i]["favourite"]
+        fav: rawQuery[i]["favourite"]
       ));
     }
 

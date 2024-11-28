@@ -34,4 +34,16 @@ class Recipe {
       favourite = true;
     }
   }
+
+  void changeFavourite()
+  {
+    if(favourite)
+    {
+      favourite = false;
+    }
+    else
+    {
+      favourite = true;
+    }
+  }
 }
