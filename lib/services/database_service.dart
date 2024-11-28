@@ -36,17 +36,17 @@ class DatabaseService {
       onUpgrade: (db, oldVersion, newVersion) async {
         //=========== HANDLE DATABASE UPGRADES ============
         // Example:
-        // if (oldVersion < 2) {
-        //   // Create favourites table if it doesn't exist
-        //   await db.execute('''
-        //     CREATE TABLE IF NOT EXISTS favourites (
-        //       id INTEGER PRIMARY KEY AUTOINCREMENT,
-        //       recipe_id INTEGER,
-        //       is_favourite INTEGER DEFAULT 0,
-        //       FOREIGN KEY (recipe_id) REFERENCES recipes (id)
-        //     )
-        //   ''');
-        // }
+        if (oldVersion < 2) {
+          // Create favourites table if it doesn't exist
+          await db.execute('''
+            CREATE TABLE IF NOT EXISTS favourites (
+              id INTEGER PRIMARY KEY AUTOINCREMENT,
+              recipe_id INTEGER,
+              is_favourite INTEGER DEFAULT 0,
+              FOREIGN KEY (recipe_id) REFERENCES recipes (id)
+            )
+          ''');
+        }
       }
     );
     return database;
