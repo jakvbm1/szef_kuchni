@@ -1,9 +1,12 @@
+import 'dart:ffi';
+
 class Recipe {
   final int id;
   final int minutes;
   final String name;
   final String nutrition;
   final String steps;
+  bool favourite = false;
   List<String> stepsList = [];
 
   Recipe({
@@ -12,6 +15,7 @@ class Recipe {
     required this.minutes,
     required this.nutrition,
     required this.steps,
+    int fav = 0
   })
   
   {
@@ -25,5 +29,9 @@ class Recipe {
       }
     }
 
+    if(fav > 0)
+    {
+      favourite = true;
+    }
   }
 }
