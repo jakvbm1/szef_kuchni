@@ -20,7 +20,9 @@ class _RecipeViewState extends State<RecipeView> {
 
   @override
   void initState() {
-        _loadIngredientsNames();
+        setState(() {
+                  _loadIngredientsNames();
+        });
     super.initState();
 
   }

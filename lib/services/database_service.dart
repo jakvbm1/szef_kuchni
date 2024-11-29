@@ -173,6 +173,7 @@ class DatabaseService {
     for (int i=0; i < rawQuery.length; i++)
     {
       ingredients.add(rawQuery[i]["name"]);
+      print(ingredients[i]);
     }
     return ingredients;
   }
