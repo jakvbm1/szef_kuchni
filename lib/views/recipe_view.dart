@@ -16,12 +16,13 @@ class RecipeView extends StatefulWidget
 class _RecipeViewState extends State<RecipeView> {
   _RecipeViewState({required this.recipe});
   Recipe recipe;
-  late List<String> ingredients;
+  List<String> ingredients = [];
 
   @override
   void initState() {
+        _loadIngredientsNames();
     super.initState();
-    _loadIngredientsNames();
+
   }
 
   Future<void> _loadIngredientsNames() async
@@ -40,6 +41,7 @@ class _RecipeViewState extends State<RecipeView> {
         mainAxisAlignment: MainAxisAlignment.start,
         children: [
           foodStats(),
+          ingredientsDisplay(),
           Expanded(child: stepsList())
         ],
       )
@@ -98,7 +100,7 @@ class _RecipeViewState extends State<RecipeView> {
         borderRadius: BorderRadius.circular(12),
         color: Colors.indigo[200]
       ),
-      height: 300,
+      height: 200,
 
       child: Column
       (
@@ -118,6 +120,34 @@ class _RecipeViewState extends State<RecipeView> {
       ),
 
     ),
+    );
+  }
+
+  Padding ingredientsDisplay()
+  {
+    String ingr = '';
+
+    for(int i=0; i<ingredients.length; i++)
+    {
+      ingr += "${ingredients[i]},  ";
+    }
+
+    return Padding
+    (
+      padding: const EdgeInsets.all(8),
+      child: Container
+    (
+      decoration: BoxDecoration
+      (
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.indigo[200]
+      ),
+      height: 150,
+
+      child: Text(ingr)
+
+    ),
+
     );
   }
 

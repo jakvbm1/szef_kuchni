@@ -162,10 +162,12 @@ class DatabaseService {
     List<String> ingredients = [];
     List<Map> rawQuery = await dbClient!.rawQuery
     (
-      '''SELECT name from ingredients, ingredients_linking
-      WHERE ingredients.id = ingredients_linking.id
-      AND ingredients_linking.ingredient_id = ${id}
+      '''SELECT name from ingredients LEFT JOIN ingredients_linking
+      ON ingredients.id = ingredients_linking.ingredient_id
+      WHERE ingredients_linking.recipe_id = ${id}
       '''
+    
+
     );
 
     for (int i=0; i < rawQuery.length; i++)
