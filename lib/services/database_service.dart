@@ -155,4 +155,48 @@ class DatabaseService {
     }
     return categoryNames;
   }
+
+  Future<List<String>> getRecipeIngredients(int id) async 
+  {
+    var dbClient = await db;
+    List<String> ingredients = [];
+    List<Map> rawQuery = await dbClient!.rawQuery
+    (
+      '''SELECT name from ingredients, ingredients_linking
+      WHERE ingredients.id = ingredients_linking.id
+      AND ingredients_linking.ingredient_id = ${id}
+      '''
+    );
+
+    for (int i=0; i < rawQuery.length; i++)
+    {
+      ingredients.add(rawQuery[i]["name"]);
+    }
+    return ingredients;
+  }
+
+  Future<void> addRecipeToFavourites(int id) async
+  {
+   var dbClient = await db;
+   await dbClient!.rawUpdate
+   (
+    '''UPDATE favourites
+        SET is_favourite = 1
+        WHERE recipe_id = $id
+      
+     '''
+   );
+  }
+
+  Future<void> remRecipeFromFavourites(int id) async
+  {
+   var dbClient = await db;
+   await dbClient!.rawUpdate
+   (
+    '''UPDATE favourites
+        SET is_favourite = 0
+        WHERE recipe_id = $id    
+     '''
+   );
+  }
 }

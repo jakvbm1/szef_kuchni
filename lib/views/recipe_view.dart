@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
+import 'package:szef_kuchni_v2/services/database_service.dart';
 
 class RecipeView extends StatefulWidget
 {
@@ -15,7 +16,18 @@ class RecipeView extends StatefulWidget
 class _RecipeViewState extends State<RecipeView> {
   _RecipeViewState({required this.recipe});
   Recipe recipe;
-  
+  late List<String> ingredients;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadIngredientsNames();
+  }
+
+  Future<void> _loadIngredientsNames() async
+  {
+        ingredients = await DatabaseService().getRecipeIngredients(recipe.id);
+  }
 
   @override
   Widget build(BuildContext context) {

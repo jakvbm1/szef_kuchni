@@ -1,3 +1,5 @@
+import 'package:szef_kuchni_v2/services/database_service.dart';
+
 class Recipe {
   final int id;
   final int minutes;
@@ -26,6 +28,17 @@ class Recipe {
   }
 
   void changeFavourite() {
+
+    if(isFavourite)
+    {
+      DatabaseService().remRecipeFromFavourites(this.id);
+    }
+
+    else
+    {
+      DatabaseService().addRecipeToFavourites(this.id);
+    }
+
     isFavourite = !isFavourite;
     print(isFavourite);
     // update the database
