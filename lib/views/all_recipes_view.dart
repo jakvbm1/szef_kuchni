@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
@@ -31,6 +32,8 @@ class _AllRecipesViewState extends State<AllRecipesView> {
   bool _hasMore = true;
   int _batchNumber = 0;
   static const int _batchSize = 40;
+  bool _isSearching = false;
+  Timer? _debounce;
 
   // State of filters expansion panel
   bool expansionPanelState = false;
@@ -128,8 +131,24 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     setState(() {
       _recipes = newRecipes;
       _isLoading = false;
+      _isSearching = false;
       _hasMore = false; // Disable pagination for search results
       _batchNumber = 0; // Reset pagination counter
+    });
+  }
+
+  void _displaySearchResultsWithDelay(String value) {
+    setState(() {
+      _isSearching = true;
+    });
+    // Cancel the previous timer if it's still active
+    if (_debounce?.isActive ?? false) {
+      _debounce!.cancel();
+    }
+
+    // Start a new timer
+    _debounce = Timer(const Duration(seconds: 1), () {
+      _displaySearchResults(value);
     });
   }
 
@@ -158,7 +177,9 @@ class _AllRecipesViewState extends State<AllRecipesView> {
 
               filtersExpandablePanel(theme, viewHeight, constraints),
 
-              recipesDisplay(theme),
+              _isSearching
+              ? loadingDisplay(theme)
+              : recipesDisplay(theme)
             ]
           ),
         );
@@ -174,7 +195,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                 child: Padding(
                   padding: const EdgeInsets.all(8.0),
                   child: TextField(
-                    onChanged:(value) => _displaySearchResults(value),
+                    onChanged:(value) => _displaySearchResultsWithDelay(value),
                     decoration: const InputDecoration(
                       label: Text(
                         "Wyszukaj po nazwie",
@@ -243,7 +264,13 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
                               keyboardType: TextInputType.number,
-                              onChanged: (value) => _minTime = int.parse(value),
+                              onChanged: (value) {
+                                if (value.isEmpty) {
+                                  _minTime = 0; 
+                                } else {
+                                  _minTime = int.parse(value);
+                                }
+                              },
                               decoration: const InputDecoration(
                                 isDense: true,
                                 label: Text(
@@ -451,39 +478,43 @@ class _AllRecipesViewState extends State<AllRecipesView> {
         padding: const EdgeInsets.all(5.0),
         child: Card(
           color: theme.colorScheme.surfaceContainerHigh,
-          child: ListView.builder(
-            controller: _scrollController,
-            itemCount: _recipes.length + (_hasMore ? 1 : 0),
-            itemBuilder: (context, index) {
+          child: 
+            _recipes.isNotEmpty
+            ? ListView.builder(
+                controller: _scrollController,
+                itemCount: _recipes.length + (_hasMore ? 1 : 0),
+                itemBuilder: (context, index) {
 
-              // Displays loading indicator when loading from database is not finished
-              // im not sure if it works correctly
-              if (index >= _recipes.length) {
-                return const Center(
-                  child: Padding(
-                    padding: EdgeInsets.all(16),
-                    child: CircularProgressIndicator(),
-                  ),
-                ); 
-              }
-
-              // Displays recipe tiles
-              // this need to be changed to a recipe button that opens a recipe view
-              return GestureDetector(
-                child: Padding(
-                  padding: const EdgeInsets.all(15.0),
-                  child: Card(
-                    color: theme.colorScheme.surface,
+                  // Displays loading indicator when loading from database is not finished
+                  // im not sure if it works correctly
+                  if (index >= _recipes.length) {
+                    return const Center(
+                      child: Padding(
+                        padding: EdgeInsets.all(16),
+                        child: CircularProgressIndicator(),
+                      ),
+                    ); 
+                  }
+                  // Displays recipe tiles
+                  // this need to be changed to a recipe button that opens a recipe view
+                  return GestureDetector(
                     child: Padding(
-                      padding: const EdgeInsets.all(18.0),
-                      child: recipeTile(index, theme),
+                      padding: const EdgeInsets.all(15.0),
+                      child: Card(
+                        color: theme.colorScheme.surface,
+                        child: Padding(
+                          padding: const EdgeInsets.all(18.0),
+                          child: recipeTile(index, theme),
+                        ),
+                      ),
                     ),
-                  ),
-                ),
-                onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeView(recipe: _recipes[index])));},
-              );
-            },
-          ),
+                    onTap: (){Navigator.push(context, MaterialPageRoute(builder: (context) => RecipeView(recipe: _recipes[index])));},
+                  );
+                },
+              )
+            : const Center(
+                child: Text("No results"),
+              )
         ),
       ),
     );
@@ -500,6 +531,23 @@ class _AllRecipesViewState extends State<AllRecipesView> {
         //Text(_recipes[index].steps,),
         Text(_recipes[index].isFavourite.toString(),),
       ],
+    );
+  }
+
+  Expanded loadingDisplay(ThemeData theme) {
+    return Expanded(
+      child: Padding(
+        padding: const EdgeInsets.all(5.0),
+        child: Card(
+          color: theme.colorScheme.surfaceContainerHigh,
+          child: const Center(
+            child: Padding(
+              padding: EdgeInsets.all(16),
+              child: CircularProgressIndicator(),
+            ),
+          ),
+        ),
+      ),
     );
   }
 }
