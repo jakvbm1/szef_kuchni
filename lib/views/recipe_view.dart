@@ -7,6 +7,7 @@ class RecipeView extends StatefulWidget
   
   final Recipe recipe;
 
+
   const RecipeView({super.key, required this.recipe});
 
   @override
@@ -17,7 +18,7 @@ class _RecipeViewState extends State<RecipeView> {
   _RecipeViewState({required this.recipe});
   Recipe recipe;
   List<String> ingredients = [];
-
+  bool ingredientsLoaded = false;
   @override
   void initState() {
         setState(() {
@@ -30,6 +31,10 @@ class _RecipeViewState extends State<RecipeView> {
   Future<void> _loadIngredientsNames() async
   {
         ingredients = await DatabaseService().getRecipeIngredients(recipe.id);
+        setState(() {
+                  ingredientsLoaded = true;
+        });
+
   }
 
   @override
@@ -127,13 +132,24 @@ class _RecipeViewState extends State<RecipeView> {
 
   Padding ingredientsDisplay()
   {
+
+    if(ingredientsLoaded)
+    {
+  
     String ingr = '';
 
     for(int i=0; i<ingredients.length; i++)
     {
+      if(i == ingredients.length-1)
+      {
+        ingr += "${ingredients[i]}";
+      }
+      else
+      {
       ingr += "${ingredients[i]},  ";
-    }
+      }
 
+    }
     return Padding
     (
       padding: const EdgeInsets.all(8),
@@ -146,11 +162,33 @@ class _RecipeViewState extends State<RecipeView> {
       ),
       height: 150,
 
-      child: Text(ingr)
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        mainAxisAlignment: MainAxisAlignment.start,
+        children: [
+          Text('Ingredients', style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),),
+          Text(ingr, style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400),  textAlign: TextAlign.center,),
+        ],
+      )
 
-    ),
+    ),);
+    }
 
-    );
+    else {
+      return Padding(padding: const EdgeInsets.all(8), child: Container
+    (
+      decoration: BoxDecoration
+      (
+        borderRadius: BorderRadius.circular(12),
+        color: Colors.indigo[200]
+      ),
+      height: 150,
+
+      child: Container(child: CircularProgressIndicator(), height: 40, width: 40, alignment: Alignment.center,)
+
+    ),);
+    }
+
   }
 
  ListView stepsList()
