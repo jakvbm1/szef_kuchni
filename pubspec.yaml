@@ -38,6 +38,8 @@ dependencies:
   sqflite: any
   path: any
   path_provider: ^2.1.5
+  pdf: ^3.11.1
+  open_file: ^3.5.10
 
 dev_dependencies:
   flutter_test:
