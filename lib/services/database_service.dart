@@ -210,7 +210,7 @@ class DatabaseService {
     List<Map> rawQuery = await dbClient!.rawQuery
     (
       '''SELECT * from recipes r LEFT JOIN favourites f ON r.id = f.recipe_id
-      WHERE r.is_favourite = 1
+      WHERE f.is_favourite = 1
       ''');
 
     for (int i = 0; i < rawQuery.length; i++) {

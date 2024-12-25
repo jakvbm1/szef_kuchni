@@ -36,7 +36,54 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
 
   @override
   Widget build(BuildContext context) {
-    return const Placeholder();
+    return Scaffold
+    (
+      body: Expanded(child: recipesDisplay()) ,
+    );
+  }
+
+  Column recipesDisplay()
+  {
+    if(!loaded)
+    {
+      return Column
+      (
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+
+        children: [Placeholder()],
+      );
+    }
+
+    else
+    {
+      return Column
+      (
+        mainAxisAlignment: MainAxisAlignment.start,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+
+        children: 
+        [
+          Expanded(
+            child: ListView.separated
+            (
+             separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10,),
+              itemCount: recipe.length,
+              itemBuilder:(BuildContext context, int index) {return Padding
+              (padding: const EdgeInsets.all(8),
+               child: GestureDetector
+               (
+                onTap: (){},
+                child: Container
+                (
+                  height: 100,
+                  child: Text(recipe[index].name),
+                ),
+               ),);}),
+          )
+        ],
+      );
+    }
   }
 
 }
