@@ -202,4 +202,28 @@ class DatabaseService {
      '''
    );
   }
+
+  Future<List<Recipe>> getFavRecipes() async
+  {
+    var dbClient = await db;
+    List<Recipe> recipeNames = [];
+    List<Map> rawQuery = await dbClient!.rawQuery
+    (
+      '''SELECT * from recipes r LEFT JOIN favourites f ON r.id = f.recipe_id
+      WHERE r.is_favourite = 1
+      ''');
+
+    for (int i = 0; i < rawQuery.length; i++) {
+      recipeNames.add(Recipe(
+        id: rawQuery[i]["id"],
+        name: rawQuery[i]["name"],
+        minutes: rawQuery[i]["minutes"],
+        nutrition: rawQuery[i]["nutrition"],
+        steps: rawQuery[i]["steps"],
+        isFavourite: rawQuery[i]["is_favourite"] == 1,  // Convert integer to boolean
+      ));
+    }
+
+    return recipeNames;
+  }
 }
