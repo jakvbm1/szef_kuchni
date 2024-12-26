@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
+import 'package:szef_kuchni_v2/views/recipe_view.dart';
 
 class FavouriteRecipesView extends StatefulWidget{
   const FavouriteRecipesView({super.key});
@@ -13,6 +14,7 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
 
   bool loaded = false;
   List<Recipe> recipe = [];
+  
   
   @override
   void initState() {
@@ -36,14 +38,32 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+    
     return Scaffold
     (
-      body: Expanded(child: recipesDisplay()) ,
+      backgroundColor: theme.colorScheme.secondaryContainer,
+
+      appBar: AppBar(title: Text("Ulubione potrawy", style: TextStyle(fontWeight: FontWeight.w500),), backgroundColor: theme.colorScheme.surfaceContainerHigh,),
+
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: Container(
+          decoration: BoxDecoration
+          (
+            borderRadius: BorderRadius.circular(16),
+            color: theme.colorScheme.surfaceContainerHigh
+          ),
+          child: Expanded(child: recipesDisplay(context))),
+      ) ,
     );
   }
 
-  Column recipesDisplay()
+  Column recipesDisplay(BuildContext context)
+  
   {
+    var theme = Theme.of(context);
+
     if(!loaded)
     {
       return Column
@@ -61,23 +81,37 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
       (
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
-
+        
         children: 
         [
+
           Expanded(
             child: ListView.separated
             (
-             separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 10,),
+             separatorBuilder: (BuildContext context, int index) => const SizedBox(height: 4,),
               itemCount: recipe.length,
               itemBuilder:(BuildContext context, int index) {return Padding
               (padding: const EdgeInsets.all(8),
                child: GestureDetector
                (
-                onTap: (){},
+                onTap: (){Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => RecipeView(
+                            recipe: recipe[index],
+                          ),
+                        ),
+                      );},
                 child: Container
                 (
-                  height: 100,
-                  child: Text(recipe[index].name),
+                  height: 80,
+                  alignment: Alignment.center,
+                  child: Text(recipe[index].name, style: TextStyle(fontWeight: FontWeight.w500), textAlign: TextAlign.center),
+                  decoration: BoxDecoration
+                  (
+                    borderRadius: BorderRadius.circular(12),
+                    color: theme.canvasColor
+                  ),
                 ),
                ),);}),
           )
