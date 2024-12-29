@@ -1,3 +1,4 @@
+import 'package:auto_size_text/auto_size_text.dart';
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
@@ -35,21 +36,45 @@ class _RecipeViewState extends State<RecipeView> {
 
   @override
   Widget build(BuildContext context) {
+    var theme = Theme.of(context);
+
     return Scaffold(
-        appBar: recipeAppBar(context),
+      backgroundColor: theme.colorScheme.secondaryContainer,
+        appBar: recipeAppBar(context, theme),
         body: Column(
           crossAxisAlignment: CrossAxisAlignment.stretch,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            foodStats(),
-            ingredientsDisplay(),
-            Expanded(child: stepsList())
+            Expanded(child:Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Container
+              (
+                decoration: BoxDecoration
+                (
+                  color: theme.colorScheme.surfaceContainerHigh,
+                  borderRadius: BorderRadius.circular(12)
+                ),
+                child: Column
+                (
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: 
+                  [
+                    foodStats(theme),
+                    ingredientsDisplay(theme),
+                  ],
+                ),
+              ),
+            )),
+            Expanded(child: stepsList(theme))
           ],
         ));
   }
 
-  AppBar recipeAppBar(BuildContext context) {
-    return AppBar(title: Text(widget.recipe.name), actions: <Widget>[
+  AppBar recipeAppBar(BuildContext context, ThemeData theme) {
+    return AppBar(title: Text(widget.recipe.name),
+     backgroundColor: theme.colorScheme.surfaceContainerHigh,
+      actions: <Widget>[
       // pdf file creation
       IconButton(
         onPressed: () async {
@@ -83,7 +108,7 @@ class _RecipeViewState extends State<RecipeView> {
     ]);
   }
 
-  Padding foodStats() {
+  Padding foodStats(ThemeData theme) {
     List<String> nutrients = widget.recipe.nutrition
         .replaceAll('[', '')
         .replaceAll(']', '')
@@ -104,22 +129,27 @@ class _RecipeViewState extends State<RecipeView> {
       padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12), color: Colors.indigo[200]),
-        height: 200,
+            borderRadius: BorderRadius.circular(12), color: theme.colorScheme.surface),
+        height: 120,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            Text(
+            AutoSizeText(
               time,
-              style: const TextStyle(fontSize: 36, fontWeight: FontWeight.w600),
+              maxFontSize: 24,
+              minFontSize: 20,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+              maxLines: 1,
             ),
             //to likely cos jest pojebane
-            Text(
+            AutoSizeText(
               "${nutrients[0]} kcal | ${nutrients[1]}g total fat | of which saturated ${nutrients[5]}g |" +
                   "${nutrients[2]}g sodium | ${nutrients[3]}g protein | ${nutrients[6]}g carbohydrates",
               textAlign: TextAlign.center,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+              maxFontSize: 18,
+              minFontSize: 12,
+              style: const TextStyle( fontWeight: FontWeight.w500),
             ),
           ],
         ),
@@ -127,7 +157,7 @@ class _RecipeViewState extends State<RecipeView> {
     );
   }
 
-  Padding ingredientsDisplay() {
+  Padding ingredientsDisplay(ThemeData theme) {
     if (ingredientsLoaded) {
       String ingr = '';
 
@@ -143,19 +173,23 @@ class _RecipeViewState extends State<RecipeView> {
         child: Container(
             decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(12),
-                color: Colors.indigo[200]),
-            height: 150,
+                color: theme.colorScheme.surface),
+            height: 90,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                const Text(
+                const AutoSizeText(
                   'Ingredients',
-                  style: TextStyle(fontSize: 24, fontWeight: FontWeight.w500),
+                  maxFontSize: 22,
+                  minFontSize: 16,
+                  style: TextStyle(fontWeight: FontWeight.w500),
                 ),
-                Text(
+                AutoSizeText(
                   ingr,
-                  style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w400),
+                  maxFontSize: 14,
+                  minFontSize: 10,
+                  style: const TextStyle(fontWeight: FontWeight.w400),
                   textAlign: TextAlign.center,
                 ),
               ],
@@ -179,7 +213,7 @@ class _RecipeViewState extends State<RecipeView> {
     }
   }
 
-  ListView stepsList() {
+  ListView stepsList(ThemeData theme) {
     return ListView.separated(
       separatorBuilder: (BuildContext context, int index) =>
           const SizedBox(height: 10),
@@ -191,14 +225,17 @@ class _RecipeViewState extends State<RecipeView> {
           child: Container(
             height: 80,
             decoration: BoxDecoration(
-              color: Colors.indigo[200],
+              color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
+              
             ),
-            child: Text(
+            alignment: Alignment.center,
+            child: AutoSizeText(
+              maxFontSize: 14,
+              minFontSize: 10,
               widget.recipe.stepsList[index],
               textAlign: TextAlign.center,
               style: const TextStyle(
-                fontSize: 16,
                 fontWeight: FontWeight.w500,
               ),
             ),
