@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
 import 'package:szef_kuchni_v2/services/save_and_open_pdf.dart';
-import 'package:szef_kuchni_v2/services/simple_pdf_api.dart';
+import 'package:szef_kuchni_v2/services/recipe_pdf_api.dart';
 
 class RecipeView extends StatefulWidget {
   final Recipe recipe;
@@ -78,10 +78,7 @@ class _RecipeViewState extends State<RecipeView> {
       // pdf file creation
       IconButton(
         onPressed: () async {
-          final simplePdfFile = await SimplePdfApi.generateSimpleTextPdf(
-            recipe.name,
-            recipe.minutes.toString(),
-          );
+          final simplePdfFile = await RecipePdfApi.generateRecipePdf(recipe, ingredients);
           SaveAndOpenPdf.openPdf(simplePdfFile);
         },
         icon: const Icon(Icons.picture_as_pdf),
