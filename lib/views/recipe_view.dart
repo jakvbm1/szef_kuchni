@@ -40,69 +40,96 @@ class _RecipeViewState extends State<RecipeView> {
 
     return Scaffold(
       backgroundColor: theme.colorScheme.secondaryContainer,
-        appBar: recipeAppBar(context, theme),
-        body: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            Expanded(child:Padding(
-              padding: const EdgeInsets.all(8.0),
-              child: Container
-              (
-                decoration: BoxDecoration
-                (
-                  color: theme.colorScheme.surfaceContainerHigh,
-                  borderRadius: BorderRadius.circular(12)
-                ),
-                child: Column
-                (
+      appBar: recipeAppBar(context, theme),
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              Container(
+                decoration: BoxDecoration(
+                    color: theme.colorScheme.surfaceContainerHigh,
+                    borderRadius: BorderRadius.circular(12)),
+                child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   mainAxisAlignment: MainAxisAlignment.center,
-                  children: 
-                  [
+                  children: [
                     foodStats(theme),
                     ingredientsDisplay(theme),
                   ],
                 ),
               ),
-            )),
-            Expanded(child: stepsList(theme))
-          ],
-        ));
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: Column(
+                  children: widget.recipe.stepsList.map((step) {
+                    return Padding(
+                      padding: const EdgeInsets.only(bottom: 10),
+                      child: Container(
+                        height: 80,
+                        decoration: BoxDecoration(
+                          color: theme.colorScheme.surface,
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        alignment: Alignment.center,
+                        child: AutoSizeText(
+                          step,
+                          maxFontSize: 14,
+                          minFontSize: 10,
+                          textAlign: TextAlign.center,
+                          style: const TextStyle(
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    );
+                  }).toList(),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 
   AppBar recipeAppBar(BuildContext context, ThemeData theme) {
-    return AppBar(title: Text(widget.recipe.name),
-     backgroundColor: theme.colorScheme.surfaceContainerHigh,
+    return AppBar(
+      title: Text(widget.recipe.name),
+      backgroundColor: theme.colorScheme.surfaceContainerHigh,
       actions: <Widget>[
-      // pdf file creation
-      IconButton(
-        onPressed: () async {
-          final simplePdfFile = await RecipePdfApi.generateRecipePdf(recipe, ingredients);
-          SaveAndOpenPdf.openPdf(simplePdfFile);
-        },
-        icon: const Icon(Icons.picture_as_pdf),
-      ),
-      IconButton(
-        icon: Icon(Icons.thumb_up,
-            color: recipe.isFavourite ? Colors.blueAccent : Colors.black),
-        onPressed: () {
-          setState(() {
-            recipe.changeFavourite();
-          });
+        // pdf file creation
+        IconButton(
+          onPressed: () async {
+            final simplePdfFile =
+                await RecipePdfApi.generateRecipePdf(recipe, ingredients);
+            SaveAndOpenPdf.openPdf(simplePdfFile);
+          },
+          icon: const Icon(Icons.picture_as_pdf),
+        ),
+        IconButton(
+          icon: Icon(Icons.thumb_up,
+              color: recipe.isFavourite ? Colors.blueAccent : Colors.black),
+          onPressed: () {
+            setState(() {
+              recipe.changeFavourite();
+            });
 
-          String displayedText;
-          if (recipe.isFavourite) {
-            displayedText = 'added to favourites!';
-          } else {
-            displayedText = 'removed from favourites!';
-          }
+            String displayedText;
+            if (recipe.isFavourite) {
+              displayedText = 'added to favourites!';
+            } else {
+              displayedText = 'removed from favourites!';
+            }
 
-          ScaffoldMessenger.of(context)
-              .showSnackBar(SnackBar(content: Text(displayedText)));
-        },
-      ),
-    ]);
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(displayedText)));
+          },
+        ),
+      ],
+    );
   }
 
   Padding foodStats(ThemeData theme) {
@@ -126,31 +153,34 @@ class _RecipeViewState extends State<RecipeView> {
       padding: const EdgeInsets.all(8),
       child: Container(
         decoration: BoxDecoration(
-            borderRadius: BorderRadius.circular(12), color: theme.colorScheme.surface),
-        height: 120,
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            AutoSizeText(
-              time,
-              maxFontSize: 24,
-              minFontSize: 20,
-              style: const TextStyle(fontWeight: FontWeight.w600),
-              maxLines: 1,
-            ),
-            //to likely cos jest pojebane
-            AutoSizeText(
-              "${nutrients[0]} kcal\n" 
-                  "${nutrients[5]}g total fat | of which saturated ${nutrients[1]}g\n"
-                  "${nutrients[2]}g carbohydrates | of which sugar ${nutrients[6]}g\n" 
-                  "${nutrients[4]}g protein | ${nutrients[3]}g sodium",
-              textAlign: TextAlign.center,
-              maxFontSize: 18,
-              minFontSize: 12,
-              style: const TextStyle( fontWeight: FontWeight.w500),
-            ),
-          ],
+            borderRadius: BorderRadius.circular(12),
+            color: theme.colorScheme.surface),
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.start,
+            children: [
+              AutoSizeText(
+                time,
+                maxFontSize: 24,
+                minFontSize: 20,
+                style: const TextStyle(fontWeight: FontWeight.w600),
+                maxLines: 1,
+              ),
+              //to likely cos jest pojebane
+              AutoSizeText(
+                "${nutrients[0]} kcal\n"
+                "${nutrients[5]}g total fat | of which saturated ${nutrients[1]}g\n"
+                "${nutrients[2]}g carbohydrates | of which sugar ${nutrients[6]}g\n"
+                "${nutrients[4]}g protein | ${nutrients[3]}g sodium",
+                textAlign: TextAlign.center,
+                maxFontSize: 18,
+                minFontSize: 12,
+                style: const TextStyle(fontWeight: FontWeight.w500),
+              ),
+            ],
+          ),
         ),
       ),
     );
@@ -162,7 +192,7 @@ class _RecipeViewState extends State<RecipeView> {
 
       for (int i = 0; i < ingredients.length; i++) {
         if (i == ingredients.length - 1) {
-          ingr += "${ingredients[i]}";
+          ingr += ingredients[i];
         } else {
           ingr += "${ingredients[i]},  ";
         }
@@ -170,10 +200,11 @@ class _RecipeViewState extends State<RecipeView> {
       return Padding(
         padding: const EdgeInsets.all(8),
         child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: theme.colorScheme.surface),
-            height: 90,
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: theme.colorScheme.surface),
+          child: Padding(
+            padding: const EdgeInsets.all(8.0),
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               mainAxisAlignment: MainAxisAlignment.start,
@@ -192,22 +223,25 @@ class _RecipeViewState extends State<RecipeView> {
                   textAlign: TextAlign.center,
                 ),
               ],
-            )),
+            ),
+          ),
+        ),
       );
     } else {
       return Padding(
         padding: const EdgeInsets.all(8),
         child: Container(
-            decoration: BoxDecoration(
-                borderRadius: BorderRadius.circular(12),
-                color: Colors.indigo[200]),
-            height: 150,
-            child: Container(
-              height: 40,
-              width: 40,
-              alignment: Alignment.center,
-              child: const CircularProgressIndicator(),
-            )),
+          decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              color: Colors.indigo[200]),
+          height: 150,
+          child: Container(
+            height: 40,
+            width: 40,
+            alignment: Alignment.center,
+            child: const CircularProgressIndicator(),
+          ),
+        ),
       );
     }
   }
@@ -217,7 +251,6 @@ class _RecipeViewState extends State<RecipeView> {
       separatorBuilder: (BuildContext context, int index) =>
           const SizedBox(height: 10),
       itemCount: widget.recipe.stepsList.length,
-      scrollDirection: Axis.vertical,
       itemBuilder: (BuildContext context, int index) {
         return Padding(
           padding: const EdgeInsets.all(8.0),
@@ -226,7 +259,6 @@ class _RecipeViewState extends State<RecipeView> {
             decoration: BoxDecoration(
               color: theme.colorScheme.surface,
               borderRadius: BorderRadius.circular(12),
-              
             ),
             alignment: Alignment.center,
             child: AutoSizeText(
