@@ -141,8 +141,10 @@ class _RecipeViewState extends State<RecipeView> {
             ),
             //to likely cos jest pojebane
             AutoSizeText(
-              "${nutrients[0]} kcal | ${nutrients[1]}g total fat | of which saturated ${nutrients[5]}g |" +
-                  "${nutrients[2]}g sodium | ${nutrients[3]}g protein | ${nutrients[6]}g carbohydrates",
+              "${nutrients[0]} kcal\n" 
+                  "${nutrients[5]}g total fat | of which saturated ${nutrients[1]}g\n"
+                  "${nutrients[2]}g carbohydrates | of which sugar ${nutrients[6]}g\n" 
+                  "${nutrients[4]}g protein | ${nutrients[3]}g sodium",
               textAlign: TextAlign.center,
               maxFontSize: 18,
               minFontSize: 12,

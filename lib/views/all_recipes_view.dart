@@ -572,7 +572,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
         //Text(_recipes[index].minutes.toString()),
         //Text(_recipes[index].nutrition),
         //Text(_recipes[index].steps),
-        Text(_recipes[index].isFavourite.toString()),
+        //Text(_recipes[index].isFavourite.toString()),
       ],
     );
   }
