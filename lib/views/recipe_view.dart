@@ -19,6 +19,7 @@ class _RecipeViewState extends State<RecipeView> {
   Recipe recipe;
   List<String> ingredients = [];
   bool ingredientsLoaded = false;
+  bool voiceMode = false;
   @override
   void initState() {
     setState(() {
@@ -128,6 +129,28 @@ class _RecipeViewState extends State<RecipeView> {
                 .showSnackBar(SnackBar(content: Text(displayedText)));
           },
         ),
+
+        IconButton
+        (
+          icon: Icon(Icons.speaker, color: voiceMode? Colors.blueAccent : Colors.black),
+          onPressed: ()
+          {
+            setState(() {
+              voiceMode = !voiceMode;
+            });
+                        String displayedText;
+            if (voiceMode) {
+              displayedText = 'voice mode on!';
+            } else {
+              displayedText = 'voice mode off!';
+            }
+
+            ScaffoldMessenger.of(context)
+                .showSnackBar(SnackBar(content: Text(displayedText)));
+
+          },
+        )
+
       ],
     );
   }
