@@ -19,7 +19,7 @@ class Recipe {
   }) {
     if(steps.isNotEmpty)
     {
-      stepsList = steps.split(", ");
+      stepsList = steps.split("', ");
       for(int i=0; i<stepsList.length; i++)
       {
         stepsList[i] = stepsList[i].replaceAll('[', '').replaceAll(']', '').replaceAll('\'', '').trim();
