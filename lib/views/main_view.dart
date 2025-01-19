@@ -5,14 +5,16 @@ import 'package:szef_kuchni_v2/views/search_recipes.dart';
 
 
 class MainView extends StatefulWidget {
-  const MainView({super.key});
+  final void Function(bool) onThemeChanged;
+  const MainView({super.key, required this.onThemeChanged});
   
   @override
   State<MainView> createState() => _MainViewState();
-}
+  }
 
 class _MainViewState extends State<MainView> {
   int selectedIndex = 0;
+  bool isInDarkMode = false;
 
   // switches index based on selected icon
   void onItemTapped(int index) {
@@ -73,6 +75,15 @@ class _MainViewState extends State<MainView> {
               )
             ),
           ),
+          Switch(
+            value: isInDarkMode,
+            onChanged: (value) {
+              setState(() {
+                isInDarkMode = value;
+                widget.onThemeChanged(isInDarkMode);
+              });
+            }
+          )
         ],
       ),
     );
