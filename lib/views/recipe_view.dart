@@ -1,9 +1,13 @@
 import 'package:auto_size_text/auto_size_text.dart';
+import 'package:avatar_glow/avatar_glow.dart';
 import 'package:flutter/material.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
 import 'package:szef_kuchni_v2/services/save_and_open_pdf.dart';
 import 'package:szef_kuchni_v2/services/recipe_pdf_api.dart';
+import 'package:szef_kuchni_v2/services/query_service.dart' as qs;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'package:flutter_tts/flutter_tts.dart';
 
 class RecipeView extends StatefulWidget {
   final Recipe recipe;
@@ -19,14 +23,35 @@ class _RecipeViewState extends State<RecipeView> {
   Recipe recipe;
   List<String> ingredients = [];
   bool ingredientsLoaded = false;
-  bool voiceMode = false;
+  stt.SpeechToText _speech = stt.SpeechToText();
+  bool _speechEnabled = false;
+  late FlutterTts flutterTts;
+  int currentStep = 0;
+  int stepsCount = 0;
+
   @override
   void initState() {
     setState(() {
       _loadIngredientsNames();
     });
     super.initState();
+    _speech = stt.SpeechToText();
+    initSpeech();
+    flutterTts = FlutterTts();
+    stepsCount = widget.recipe.stepsList.length;
   }
+
+  @override
+  void dispose() {
+    flutterTts.stop();
+    super.dispose();
+  }
+
+  void initSpeech() async {
+    _speechEnabled = await _speech.initialize();
+    setState(() {});
+  }
+
 
   Future<void> _loadIngredientsNames() async {
     ingredients = await DatabaseService().getRecipeIngredients(recipe.id);
@@ -42,6 +67,11 @@ class _RecipeViewState extends State<RecipeView> {
     return Scaffold(
       backgroundColor: theme.colorScheme.secondaryContainer,
       appBar: recipeAppBar(context, theme),
+
+      // VOICE LISTENING BUTTON
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton : voiceListeningButton(theme),
+
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(8.0),
@@ -103,10 +133,8 @@ class _RecipeViewState extends State<RecipeView> {
       actions: <Widget>[
         // pdf file creation
         IconButton(
-          onPressed: () async {
-            final simplePdfFile =
-                await RecipePdfApi.generateRecipePdf(recipe, ingredients);
-            SaveAndOpenPdf.openPdf(simplePdfFile);
+          onPressed: () {
+            createPDF();
           },
           icon: const Icon(Icons.picture_as_pdf),
         ),
@@ -129,28 +157,6 @@ class _RecipeViewState extends State<RecipeView> {
                 .showSnackBar(SnackBar(content: Text(displayedText)));
           },
         ),
-
-        IconButton
-        (
-          icon: Icon(Icons.speaker, color: voiceMode? Colors.blueAccent : Colors.black),
-          onPressed: ()
-          {
-            setState(() {
-              voiceMode = !voiceMode;
-            });
-                        String displayedText;
-            if (voiceMode) {
-              displayedText = 'voice mode on!';
-            } else {
-              displayedText = 'voice mode off!';
-            }
-
-            ScaffoldMessenger.of(context)
-                .showSnackBar(SnackBar(content: Text(displayedText)));
-
-          },
-        )
-
       ],
     );
   }
@@ -298,4 +304,104 @@ class _RecipeViewState extends State<RecipeView> {
       },
     );
   }
+
+  AvatarGlow voiceListeningButton(ThemeData theme){
+    return AvatarGlow(
+        animate: _speech.isListening,
+        glowColor: theme.primaryColor,
+        duration: const Duration(milliseconds: 2000),
+        repeat: _speech.isListening,
+        child:FloatingActionButton(
+          shape: CircleBorder(),
+          onPressed: _speech.isListening ? _stopListening : _startListening,
+          child: Icon(
+            _speechEnabled? _speech.isListening ? Icons.mic : Icons.mic_none : Icons.mic_off,
+            color: theme.cardColor,
+          ),
+          ),
+      );
+  }
+
+  void _startListening() async {
+    await _speech.listen(onResult: _onSpeechResult);
+    setState(() {});
+  }
+
+  void _stopListening() {
+    _speech.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(result){
+    if(result.finalResult){
+      String query = result.recognizedWords;
+      print(query);
+      String command = qs.QueryService.resolveQuery(query);
+      switch(command){
+        case 'favourite' :
+          setState(() {
+            recipe.changeFavourite();
+          });
+
+          String displayedText;
+          if (recipe.isFavourite) {
+            displayedText = 'added to favourites!';
+          } else {
+            displayedText = 'removed from favourites!';
+          }
+
+          ScaffoldMessenger.of(context)
+              .showSnackBar(SnackBar(content: Text(displayedText)));
+
+          break;
+
+        case 'saveAsPDF':
+          createPDF();
+          break;
+
+        case 'readNext':
+          if(currentStep == stepsCount){
+            _speak("That was the last step");
+            break;
+          }
+          _speak("Next step: ${recipe.stepsList[currentStep]}");
+          currentStep++;
+          break;
+
+        case 'readPrevious':
+          if(currentStep == 0){
+            _speak("That was the first step");
+            break;
+          }
+          currentStep--;
+          _speak("Previous step: ${recipe.stepsList[currentStep]}");
+          break;
+
+        case 'readIngredients':
+          _speak("Ingredients: $ingredients");
+          break;
+
+        case 'mainMenu':
+          Navigator.pop(context);
+          break;
+
+        default:
+          break;
+
+      }
+      setState(() {});
+    }
+  }
+
+  Future<void> _speak(String text) async {
+    await flutterTts.setPitch(1.0);
+    await flutterTts.speak(text);
+  }
+
+  void createPDF() async{
+    final simplePdfFile =
+      await RecipePdfApi.generateRecipePdf(recipe, ingredients);
+    SaveAndOpenPdf.openPdf(simplePdfFile);
+  }
+
 }

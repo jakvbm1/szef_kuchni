@@ -5,7 +5,9 @@ import 'package:szef_kuchni_v2/services/database_service.dart';
 import 'package:szef_kuchni_v2/views/recipe_view.dart';
 
 class AllRecipesView extends StatefulWidget {
-  const AllRecipesView({super.key});
+  final String initialSearchText;
+
+  const AllRecipesView({Key? key, required this.initialSearchText}) : super(key: key);
 
   @override
   State<AllRecipesView> createState() => _AllRecipesViewState();
@@ -61,6 +63,12 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     _loadMoreRecipes();
     _loadIngredientsNames();
     _loadCategoriesNames();
+    String initialSearchText = widget.initialSearchText;
+    userSearchInput = initialSearchText;
+    print(initialSearchText);
+    if (initialSearchText != ""){
+      _displaySearchResults(initialSearchText);
+    }
   }
 
   // Called when the view is destroyed

@@ -1,8 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:open_file/open_file.dart';
 import 'package:szef_kuchni_v2/views/all_recipes_view.dart';
 import 'package:szef_kuchni_v2/views/favourite_recipes.dart';
 import 'package:szef_kuchni_v2/views/search_recipes.dart';
-
+import 'package:avatar_glow/avatar_glow.dart';
+import 'package:szef_kuchni_v2/services/query_service.dart' as qs;
+import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class MainView extends StatefulWidget {
   final void Function(bool) onThemeChanged;
@@ -15,12 +18,27 @@ class MainView extends StatefulWidget {
 class _MainViewState extends State<MainView> {
   int selectedIndex = 0;
   bool isInDarkMode = false;
+  stt.SpeechToText _speech = stt.SpeechToText();
+  bool _speechEnabled = false;
+  String searchText="";
 
   // switches index based on selected icon
   void onItemTapped(int index) {
     setState(() {
       selectedIndex = index;
     });
+  }
+
+  @override
+  void initState(){
+    super.initState();
+    _speech = stt.SpeechToText();
+    initSpeech();
+  }
+
+  void initSpeech() async {
+    _speechEnabled = await _speech.initialize();
+    setState(() {});
   }
 
   @override
@@ -35,7 +53,7 @@ class _MainViewState extends State<MainView> {
     Widget view;
     switch (selectedIndex) {
       case 0:
-        view = const AllRecipesView();
+        view = AllRecipesView(initialSearchText: searchText);
       case 1:
         view = const SearchRecipesView();
       case 2:
@@ -50,6 +68,10 @@ class _MainViewState extends State<MainView> {
 
       // MAIN BODY
       body: view,
+
+      // VOICE LISTENING BUTTON
+      floatingActionButtonLocation: FloatingActionButtonLocation.endFloat,
+      floatingActionButton : voiceListeningButton(theme),
 
       // BOTTOM NAVIGATION BAR
       bottomNavigationBar: bottomNavigationBar(theme),
@@ -110,4 +132,69 @@ class _MainViewState extends State<MainView> {
       onTap: onItemTapped,
     );
   }
+
+  AvatarGlow voiceListeningButton(ThemeData theme){
+    return AvatarGlow(
+        animate: _speech.isListening,
+        glowColor: theme.primaryColor,
+        duration: const Duration(milliseconds: 2000),
+        repeat: _speech.isListening,
+        child:FloatingActionButton(
+          shape: CircleBorder(),
+          onPressed: _speech.isListening ? _stopListening : _startListening,
+          child: Icon(
+            _speechEnabled? _speech.isListening ? Icons.mic : Icons.mic_none : Icons.mic_off,
+            color: theme.cardColor,
+          ),
+          ),
+      );
+  }
+
+
+  void _startListening() async {
+      await _speech.listen(onResult: _onSpeechResult);
+      setState(() {});
+  }
+
+  void _stopListening() {
+    _speech.stop();
+    setState(() {});
+  }
+
+  void _onSpeechResult(result){
+    if(result.finalResult){
+      String query = result.recognizedWords;
+      print(query);
+      String command = qs.QueryService.resolveQuery(query);
+      switch(command){
+        case 'search':
+          setState(() {
+            searchText = query.replaceAll(qs.QueryService.search, '');
+          });
+          setState(() {
+            selectedIndex = 1;
+          });
+        case 'mainMenu':
+          setState(() {
+            selectedIndex = 0;
+          });
+        case 'favourites':
+          setState(() {
+            selectedIndex = 2;
+          });
+        case 'favourite':
+          setState(() {
+            selectedIndex = 2;
+          });
+        break;
+
+        default:
+        break;
+      }
+    }
+    
+  }
+
 }
+  
+
