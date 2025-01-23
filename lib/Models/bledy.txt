@@ -1,0 +1,3 @@
+tutaj mozna wrzucac znalezione bledy
+
+helvetica bold nie ma unicode
