@@ -5,9 +5,9 @@ import 'package:szef_kuchni_v2/services/database_service.dart';
 import 'package:szef_kuchni_v2/views/recipe_view.dart';
 
 class AllRecipesView extends StatefulWidget {
-  final String initialSearchText;
+  Function(String) onSignalReceived;
 
-  const AllRecipesView({Key? key, required this.initialSearchText}) : super(key: key);
+  AllRecipesView({Key? key, required this.onSignalReceived}) : super(key: key);
 
   @override
   State<AllRecipesView> createState() => _AllRecipesViewState();
@@ -63,12 +63,8 @@ class _AllRecipesViewState extends State<AllRecipesView> {
     _loadMoreRecipes();
     _loadIngredientsNames();
     _loadCategoriesNames();
-    String initialSearchText = widget.initialSearchText;
-    userSearchInput = initialSearchText;
-    print(initialSearchText);
-    if (initialSearchText != ""){
-      _displaySearchResults(initialSearchText);
-    }
+
+    widget.onSignalReceived = handleSearchSignal;
   }
 
   // Called when the view is destroyed
@@ -120,6 +116,17 @@ class _AllRecipesViewState extends State<AllRecipesView> {
       }
       _isLoading = false;
     });
+  }
+
+  // called when voice command for search is recieved
+  void handleSearchSignal(String searchQuery) {
+    if(mounted){
+      print("signal recieved!");
+      _displaySearchResults(searchQuery);  // Trigger search with new input
+    }
+    else {
+      print("signal error");
+    }
   }
 
   // displays search results based on keyword entered in searchbar,

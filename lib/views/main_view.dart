@@ -17,6 +17,10 @@ class MainView extends StatefulWidget {
   }
 
 class _MainViewState extends State<MainView> {
+  final AllRecipesView _allRecipesView = AllRecipesView(
+    key: const Key('all_recipes_view'),
+    onSignalReceived: (String signal){}
+  );
   int selectedIndex = 0;
   bool isInDarkMode = false;
   stt.SpeechToText _speech = stt.SpeechToText();
@@ -54,7 +58,7 @@ class _MainViewState extends State<MainView> {
     Widget view;
     switch (selectedIndex) {
       case 0:
-        view = AllRecipesView(initialSearchText: searchText);
+        view = _allRecipesView;
       case 1:
         view = const SearchRecipesView();
       case 2:
@@ -171,11 +175,10 @@ class _MainViewState extends State<MainView> {
       switch(command){
         case 'search':
           setState(() {
+            selectedIndex = 0;
             searchText = query.replaceAll(qs.QueryService.search, '');
           });
-          setState(() {
-            selectedIndex = 1;
-          });
+          _sendSearchQuery(searchText);
         case 'mainMenu':
           setState(() {
             selectedIndex = 0;
@@ -195,6 +198,14 @@ class _MainViewState extends State<MainView> {
       }
     }
     
+  }
+
+  void _sendSearchQuery(String query) {
+    if (mounted && selectedIndex == 0) {
+      print("sending signal...");
+      // Update the AllRecipesView with search query
+      _allRecipesView!.onSignalReceived(query);
+    }
   }
 
 }

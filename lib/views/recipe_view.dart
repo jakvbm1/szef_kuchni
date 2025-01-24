@@ -404,7 +404,8 @@ class _RecipeViewState extends State<RecipeView> {
   }
 
   Future<void> _speak(String text) async {
-    await flutterTts.setPitch(1.0);
+    flutterTts.setLanguage("en-US");
+    flutterTts.setPitch(1.0);
     await flutterTts.speak(text);
   }
 
