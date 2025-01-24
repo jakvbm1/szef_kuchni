@@ -1,3 +1,4 @@
 tutaj mozna wrzucac znalezione bledy
 
 helvetica bold nie ma unicode
+w Favourites expanded zawiniete jest w padding a nie powinno

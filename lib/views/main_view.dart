@@ -9,7 +9,8 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 class MainView extends StatefulWidget {
   final void Function(bool) onThemeChanged;
-  const MainView({super.key, required this.onThemeChanged});
+  final stt.SpeechToText? speechToText;
+  const MainView({super.key, required this.onThemeChanged, this.speechToText});
   
   @override
   State<MainView> createState() => _MainViewState();
@@ -32,7 +33,7 @@ class _MainViewState extends State<MainView> {
   @override
   void initState(){
     super.initState();
-    _speech = stt.SpeechToText();
+    _speech = widget.speechToText ?? stt.SpeechToText();
     initSpeech();
   }
 
@@ -85,16 +86,16 @@ class _MainViewState extends State<MainView> {
       title: Row(
         children: [
           Expanded(
-            child: Card(
-              color: theme.cardTheme.color,
-              child: Padding(
-                padding: const EdgeInsets.only(top: 1.0, bottom: 1.0),
-                child: Text(
-                  "Szef Kuchni", 
-                  style: style,
-                  textAlign: TextAlign.center,
-                ),
-              )
+            child: Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Card(
+                color: theme.cardTheme.color,
+                  child: Text(
+                    "Szef Kuchni", 
+                    style: style,
+                    textAlign: TextAlign.center,
+                  ),          
+              ),
             ),
           ),
           Switch(
@@ -122,6 +123,7 @@ class _MainViewState extends State<MainView> {
         BottomNavigationBarItem(
           icon: Icon(Icons.search),
           label: "Search",
+          key: Key("ToggleSearch")
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.favorite),

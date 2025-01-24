@@ -54,7 +54,7 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
             borderRadius: BorderRadius.circular(16),
             color: theme.colorScheme.surfaceContainerHigh
           ),
-          child: Expanded(child: recipesDisplay(context))),
+          child: recipesDisplay(context)),
       ) ,
     );
   }
