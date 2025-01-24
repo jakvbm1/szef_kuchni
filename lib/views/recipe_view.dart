@@ -10,16 +10,17 @@ import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'package:flutter_tts/flutter_tts.dart';
 
 class RecipeView extends StatefulWidget {
-  final Recipe recipe;
-
-  const RecipeView({super.key, required this.recipe});
+ final Recipe recipe;
+  final DatabaseService dbService;
+  RecipeView({super.key, required this.recipe, DatabaseService? dbService})
+  : dbService = dbService ?? DatabaseService();
 
   @override
-  State<RecipeView> createState() => _RecipeViewState(recipe: recipe);
+  State<RecipeView> createState() => _RecipeViewState(recipe: recipe, dbService: dbService);
 }
 
 class _RecipeViewState extends State<RecipeView> {
-  _RecipeViewState({required this.recipe});
+  _RecipeViewState({required this.recipe, required this.dbService});
   Recipe recipe;
   List<String> ingredients = [];
   bool ingredientsLoaded = false;
@@ -28,7 +29,7 @@ class _RecipeViewState extends State<RecipeView> {
   late FlutterTts flutterTts;
   int currentStep = 0;
   int stepsCount = 0;
-  var dbService = DatabaseService();
+  DatabaseService dbService;
 
   @override
   void initState() {
@@ -55,7 +56,7 @@ class _RecipeViewState extends State<RecipeView> {
 
 
   Future<void> _loadIngredientsNames() async {
-    ingredients = await DatabaseService().getRecipeIngredients(recipe.id);
+    ingredients = await dbService.getRecipeIngredients(recipe.id);
     setState(() {
       ingredientsLoaded = true;
     });
