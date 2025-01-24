@@ -7,19 +7,22 @@ import 'package:szef_kuchni_v2/views/recipe_view.dart';
 class AllRecipesView extends StatefulWidget {
   Function(String) onSignalReceived;
 
-  AllRecipesView({Key? key, required this.onSignalReceived}) : super(key: key);
-
+  AllRecipesView({super.key, required this.onSignalReceived, DatabaseService? dbs}) : dbService = dbs ?? DatabaseService();
+  final DatabaseService dbService;
   @override
-  State<AllRecipesView> createState() => _AllRecipesViewState();
+  State<AllRecipesView> createState() => _AllRecipesViewState(databaseService: dbService);
 }
 
 class _AllRecipesViewState extends State<AllRecipesView> {
+
+  //constructor takes dbService so you can provide a mock dbService for testing purposes
+  _AllRecipesViewState({required this.databaseService});
   //=====================================================
   //================== VARIABLES ========================
   //=====================================================
 
   // Use this to import databaseService functionality
-  final DatabaseService databaseService = DatabaseService();
+  final DatabaseService databaseService;
   // Sets a trigger that is used to load more recipes with pagination
   final ScrollController _scrollController = ScrollController();
   // List of recipes that are displayed in the view

@@ -690,7 +690,7 @@ class MockDatabaseService extends _i1.Mock implements _i9.DatabaseService {
             #enteredKeyword: enteredKeyword,
           },
         ),
-        returnValue: _i5.Future<List<dynamic>>.value(<dynamic>[]),
+        returnValue: _i5.Future<List<Recipe>>.value(<Recipe>[]),
       ) as _i5.Future<List<Recipe>>);
 
   @override
@@ -746,6 +746,6 @@ class MockDatabaseService extends _i1.Mock implements _i9.DatabaseService {
           #getFavRecipes,
           [],
         ),
-        returnValue: _i5.Future<List<dynamic>>.value(<dynamic>[]),
+        returnValue: _i5.Future<List<Recipe>>.value(<Recipe>[]),
       ) as _i5.Future<List<Recipe>>);
 }

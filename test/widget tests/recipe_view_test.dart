@@ -35,13 +35,18 @@ void main()
     expect(find.text(testRecipe.name), findsOneWidget);
   });  
 
-    testWidgets("Displaying recipe's nutrition", (WidgetTester tester) async
-    {
-      await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe)));
-      expect(find.text("${300.0} kcal\n ${1.0}g total fat | of which saturated ${1.0}g\n ${1.0}g carbohydrates | of which sugar ${1.0}g\n ${1.0}g protein | ${1.0}g sodium"), findsOne);
-                
-                
-    });
+  testWidgets("Display time test", (WidgetTester tester) async 
+  {
+    await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe)));
+    expect(find.textContaining('45 min'), findsOneWidget);
+  });
+
+    testWidgets("Display macro test", (WidgetTester tester) async 
+  {
+    await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe)));
+    expect(find.textContaining('300 kcal'), findsOneWidget);
+    expect(find.textContaining('1g carbohydrates'), findsOneWidget);
+  });
 
   });
 

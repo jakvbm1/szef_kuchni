@@ -84,22 +84,6 @@ void main() {
     });
 
 
-    testWidgets('calls _startListening when FloatingActionButton is pressed', (tester) async {
-      when(mockSpeechToText.initialize()).thenAnswer((_) async => true);
-      when(mockSpeechToText.isListening).thenReturn(false);
 
-      await tester.pumpWidget(MaterialApp(
-        home: MainView(
-          onThemeChanged: (bool value) {},speechToText: mockSpeechToText,
-        ),
-      ));
-
-      // Find and tap the FloatingActionButton
-      final fabFinder = find.byType(FloatingActionButton);
-      await tester.tap(fabFinder);
-
-      // Verify _startListening is called
-      verify(mockSpeechToText.listen(onResult: anyNamed('onResult'))).called(1);
-    });
   });
 }

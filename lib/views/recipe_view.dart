@@ -12,6 +12,8 @@ import 'package:flutter_tts/flutter_tts.dart';
 class RecipeView extends StatefulWidget {
  final Recipe recipe;
   final DatabaseService dbService;
+  
+
   RecipeView({super.key, required this.recipe, DatabaseService? dbService})
   : dbService = dbService ?? DatabaseService();
 
