@@ -14,6 +14,7 @@ import 'package:speech_to_text/speech_to_text.dart' as _i3;
 import 'package:speech_to_text_platform_interface/speech_to_text_platform_interface.dart'
     as _i6;
 import 'package:sqflite/sqflite.dart' as _i10;
+import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart' as _i9;
 
 // ignore_for_file: type=lint
@@ -666,7 +667,7 @@ class MockDatabaseService extends _i1.Mock implements _i9.DatabaseService {
       ) as _i5.Future<_i10.Database?>);
 
   @override
-  _i5.Future<List<dynamic>> getRecipeNames({
+  _i5.Future<List<Recipe>> getRecipeNames({
     required int? batchNumber,
     required int? batchSize,
     required int? minTime,
@@ -690,7 +691,7 @@ class MockDatabaseService extends _i1.Mock implements _i9.DatabaseService {
           },
         ),
         returnValue: _i5.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i5.Future<List<dynamic>>);
+      ) as _i5.Future<List<Recipe>>);
 
   @override
   _i5.Future<List<String>> getIngredientsNames() => (super.noSuchMethod(
@@ -740,11 +741,11 @@ class MockDatabaseService extends _i1.Mock implements _i9.DatabaseService {
       ) as _i5.Future<void>);
 
   @override
-  _i5.Future<List<dynamic>> getFavRecipes() => (super.noSuchMethod(
+  _i5.Future<List<Recipe>> getFavRecipes() => (super.noSuchMethod(
         Invocation.method(
           #getFavRecipes,
           [],
         ),
         returnValue: _i5.Future<List<dynamic>>.value(<dynamic>[]),
-      ) as _i5.Future<List<dynamic>>);
+      ) as _i5.Future<List<Recipe>>);
 }
