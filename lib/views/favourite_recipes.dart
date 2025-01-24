@@ -71,7 +71,7 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
         mainAxisAlignment: MainAxisAlignment.start,
         crossAxisAlignment: CrossAxisAlignment.stretch,
 
-        children: [Placeholder()],
+        children: [Container(height: 100, child: Text("Loading..."),)],
       );
     }
 

@@ -28,6 +28,7 @@ class _RecipeViewState extends State<RecipeView> {
   late FlutterTts flutterTts;
   int currentStep = 0;
   int stepsCount = 0;
+  var dbService = DatabaseService();
 
   @override
   void initState() {
@@ -143,7 +144,16 @@ class _RecipeViewState extends State<RecipeView> {
               color: recipe.isFavourite ? Colors.blueAccent : Colors.black),
           onPressed: () {
             setState(() {
+              //recipe.changeFavourite();
               recipe.changeFavourite();
+              if(recipe.isFavourite)
+              {
+                dbService.addRecipeToFavourites(recipe.id);
+              }
+              else
+              {
+                dbService.remRecipeFromFavourites(recipe.id);
+              }
             });
 
             String displayedText;

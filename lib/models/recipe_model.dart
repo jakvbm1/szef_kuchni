@@ -28,19 +28,7 @@ class Recipe {
   }
 
   void changeFavourite() {
-
-    if(isFavourite)
-    {
-      DatabaseService().remRecipeFromFavourites(this.id);
-    }
-
-    else
-    {
-      DatabaseService().addRecipeToFavourites(this.id);
-    }
-
     isFavourite = !isFavourite;
     print(isFavourite);
-    // update the database
   }
 }
