@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:mockito/mockito.dart';
+
 import 'package:mockito/annotations.dart';
 import 'package:szef_kuchni_v2/views/main_view.dart';
 import 'package:szef_kuchni_v2/views/all_recipes_view.dart';
@@ -9,15 +9,12 @@ import 'package:szef_kuchni_v2/views/search_recipes.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 
-import 'main_viev_test.mocks.dart';
 @GenerateMocks([stt.SpeechToText])
 
 
 void main() {
-  late MockSpeechToText mockSpeechToText;
 
   setUp(() {
-    mockSpeechToText = MockSpeechToText();
   });
 
   Widget createMainView() {

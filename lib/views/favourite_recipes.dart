@@ -4,17 +4,19 @@ import 'package:szef_kuchni_v2/services/database_service.dart';
 import 'package:szef_kuchni_v2/views/recipe_view.dart';
 
 class FavouriteRecipesView extends StatefulWidget{
-  const FavouriteRecipesView({super.key});
-
+  FavouriteRecipesView({DatabaseService? dbs, super.key}) : dbService = dbs ?? DatabaseService();
+  final DatabaseService dbService;
   @override
-  State<FavouriteRecipesView> createState() => _FavouriteRecipesViewState();
+  State<FavouriteRecipesView> createState() => _FavouriteRecipesViewState(databaseService: dbService);
 }
 
 class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
 
   bool loaded = false;
   List<Recipe> recipe = [];
-  
+  final DatabaseService databaseService;
+
+  _FavouriteRecipesViewState({required this.databaseService});
   
   @override
   void initState() {
@@ -26,7 +28,7 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
 
   Future<void> loadRecipes() async
   {
-    recipe = await DatabaseService().getFavRecipes();
+    recipe = await databaseService.getFavRecipes();
     for(int i=0; i<recipe.length; i++)
     {
       print(recipe[i].name);

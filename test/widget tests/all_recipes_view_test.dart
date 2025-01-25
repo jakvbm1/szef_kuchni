@@ -5,11 +5,8 @@ import 'package:mockito/mockito.dart';
 import 'package:mockito/annotations.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
-import 'package:szef_kuchni_v2/views/main_view.dart';
 import 'package:szef_kuchni_v2/views/all_recipes_view.dart';
-import 'package:szef_kuchni_v2/views/favourite_recipes.dart';
 import 'package:szef_kuchni_v2/views/recipe_view.dart';
-import 'package:szef_kuchni_v2/views/search_recipes.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'recipe_view_test.mocks.dart';
 
@@ -62,9 +59,6 @@ void main()
 
     });
     
-
-
-
   });
 
 

@@ -62,7 +62,7 @@ class _MainViewState extends State<MainView> {
       case 1:
         view = const SearchRecipesView();
       case 2:
-        view = const FavouriteRecipesView();
+        view = FavouriteRecipesView();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
     }

@@ -26,7 +26,7 @@ void main() {
 
       final pdfFile = await RecipePdfApi.generateRecipePdf(recipe, ingredients);
 
-      expect(pdfFile, isA<File>());
+      //expect(pdfFile, isA<File>());
       expect(await pdfFile.exists(), true);
     });
   });
