@@ -25,7 +25,7 @@ void main()
     testRecipe2 = Recipe(id: 2, name: "Mock2 recipe ", minutes: 75, nutrition: "[300, 1, 1, 1, 1, 1, 1]", steps: "['step 1', 'step 2']", isFavourite: false);
   });
   group("Testing the UI", (){
-    testWidgets("Display ingredients", (WidgetTester tester) async {
+    testWidgets("Display Recipes", (WidgetTester tester) async {
 
         when(mockDatabaseService.getRecipeNames(batchNumber: 0, batchSize: 40, minTime: 0, maxTime: 0, selectedIngredients: [], selectedCategories: [])).thenAnswer(
     (_) async => [testRecipe, testRecipe2], );
@@ -59,6 +59,48 @@ void main()
 
     });
     
+    testWidgets("apply filters", (WidgetTester tester) async 
+    {
+      when(mockDatabaseService.getRecipeNames(batchNumber: 0, batchSize: 40, minTime: 0, maxTime: 0, selectedIngredients: [], selectedCategories: [])).thenAnswer(
+    (_) async => [testRecipe, testRecipe2], );
+          when(mockDatabaseService.getRecipeNames(batchNumber: 0, batchSize: 40, minTime: 50, maxTime: 90, selectedIngredients: [], selectedCategories: [])).thenAnswer(
+    (_) async => [testRecipe2], );
+    
+      when(mockDatabaseService.getIngredientsNames()).thenAnswer((_) async => ['tomato', 'potato']);
+      when(mockDatabaseService.getCategoriesNames()).thenAnswer((_) async => ['vegan', 'high protein']);
+
+        await tester.pumpWidget(MaterialApp(home: AllRecipesView(onSignalReceived: (String signal){}, dbs: mockDatabaseService,)));
+
+        final filters = find.byType(ExpansionPanelList);
+        await tester.tap(filters);
+        await tester.pump();
+        await tester.pump(Durations.medium2);
+
+        //checking whether all elements are displayed properly
+        expect(find.text("Czas przygotowania"), findsOne);
+        expect(find.text("Składniki"), findsOne);
+        expect(find.text("Kategorie"), findsOne);
+        expect(find.text("Od"), findsOne);
+        expect(find.text("Do"), findsOne);
+        expect(find.text("wyszukaj składnik"), findsOne);
+        expect(find.text("wyszukaj kategorie"), findsOne);
+        expect(find.text("Zastosuj filtry"), findsOne);
+
+        final minTime = find.bySemanticsLabel("Od");
+        final maxTime = find.bySemanticsLabel("Do");
+        final apply = find.byType(ElevatedButton);
+
+        //await tester.enterText(minTime, '50');
+        //await tester.enterText(maxTime, '90');
+        await tester.tap(apply);
+
+        await tester.pump();
+        await tester.pump(Duration(seconds: 2));
+        expect(find.text("Mock2 recipe"), findsOneWidget);        
+
+        //attempting to apply filters
+    });
+
   });
 
 

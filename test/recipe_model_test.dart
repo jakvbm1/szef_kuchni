@@ -24,6 +24,23 @@ void main() {
       expect(recipe.stepsList.length, 3);
       expect(recipe.stepsList, ['Step 1', 'Step 2', 'Step 3']);
     });
+
+    test("changing favourite", ()
+    {
+        final recipe = Recipe(
+        id: 1,
+        name: 'Test Recipe',
+        minutes: 30,
+        nutrition: '200, 10, 2, 4, 7, 5, 1',
+        steps: "['Step 1', 'Step 2', 'Step 3']",
+        isFavourite: false,
+      );
+
+      expect(recipe.isFavourite, false);
+      recipe.changeFavourite();
+      expect(recipe.isFavourite, true);
+    });
+    
   }
   );
 }

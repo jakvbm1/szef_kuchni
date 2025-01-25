@@ -9,6 +9,8 @@ import 'package:szef_kuchni_v2/services/recipe_pdf_api.dart';
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized(); // Initialize the binding
 
+
+//mental illness code, potencjalnie do wywalenia
   group('PDF Generation Tests', () {
     test('PDF generates correctly', () async {
       final recipe = Recipe(
