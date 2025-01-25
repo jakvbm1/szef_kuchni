@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_tts/flutter_tts.dart';
@@ -17,6 +19,7 @@ void main()
   late MockSpeechToText mockSpeechToText;
   late MockFlutterTts mockFlutterTts;
   late Recipe testRecipe;
+  late Recipe testRecipe2;
 
   setUp(()
   {
@@ -24,6 +27,7 @@ void main()
     mockSpeechToText = MockSpeechToText();
     mockFlutterTts = MockFlutterTts();
     testRecipe = Recipe(id: 1, name: "Mock recipe", minutes: 45, nutrition: "[300, 1, 1, 1, 1, 1, 1]", steps: "['step 1', 'step 2', 'step 3 with a ,']", isFavourite: false);
+    testRecipe2 = Recipe(id: 2, name: "Mock recipe", minutes: 75, nutrition: "[300, 1, 1, 1, 1, 1, 1]", steps: "['step 1', 'step 2', 'step 3 with a ,']", isFavourite: false);
   });
   group("Testing the UI", (){
     testWidgets("Displaying recipe's name in the appBar", (WidgetTester tester) async
@@ -36,6 +40,13 @@ void main()
   {
     await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe)));
     expect(find.textContaining('45 min'), findsOneWidget);
+  });
+
+//checking whether the time is currently converted for over an hour of time
+    testWidgets("Display time test 2", (WidgetTester tester) async 
+  {
+    await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe2)));
+    expect(find.textContaining('1h 15min'), findsOneWidget);
   });
 
     testWidgets("Display macro test", (WidgetTester tester) async 
@@ -96,8 +107,24 @@ testWidgets('loading and displaying ingredients', (WidgetTester tester) async {
 
 
 
+
   });
 
+  
+   //tbh nie mam pojecia jak ta kurwe odpalic by to sprawdzac sensownie jakos xd najwyzej sie to usunie
+group("pdf generation tests", (){
 
+  testWidgets("test generating a PDF", (WidgetTester tester) async {
+    await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe)));
+    final button = find.byIcon(Icons.picture_as_pdf);
+    await tester.tap(button);
+    await tester.pump();
+    await tester.pump(Duration(seconds: 5));
+    //await tester.pumpAndSettle();
+
+
+    expect(find.textContaining("Preparation Time"), isTrue);
+  });
+});
   
 }
