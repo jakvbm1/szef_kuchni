@@ -2,3 +2,4 @@ tutaj mozna wrzucac znalezione bledy
 
 helvetica bold nie ma unicode
 w Favourites expanded zawiniete jest w padding a nie powinno
+w Favourites jak sie wejdzie na przepis usunie z polubionych i wroci do Favourites to sie nie usuwa
