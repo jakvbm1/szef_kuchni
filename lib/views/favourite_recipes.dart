@@ -96,14 +96,22 @@ class _FavouriteRecipesViewState extends State<FavouriteRecipesView> {
               (padding: const EdgeInsets.all(8),
                child: GestureDetector
                (
-                onTap: (){Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => RecipeView(
-                            recipe: recipe[index],
-                          ),
-                        ),
-                      );},
+  onTap: () async {
+    // Navigate to RecipeView and wait for the result
+    Navigator.push(
+  context,
+  MaterialPageRoute(
+    builder: (context) => RecipeView(recipe: recipe[index]),
+  ),
+).then((_) {
+  setState(() {
+    loaded = false;
+    loadRecipes();
+  });
+});
+
+  },
+
                 child: Container
                 (
                   height: 80,

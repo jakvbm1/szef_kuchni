@@ -86,21 +86,31 @@ void main()
         expect(find.text("wyszukaj kategorie"), findsOne);
         expect(find.text("Zastosuj filtry"), findsOne);
 
-        final minTime = find.bySemanticsLabel("Od");
-        final maxTime = find.bySemanticsLabel("Do");
-        final apply = find.byType(ElevatedButton);
-
-        //await tester.enterText(minTime, '50');
-        //await tester.enterText(maxTime, '90');
-        await tester.tap(apply);
-
-        await tester.pump();
-        await tester.pump(Duration(seconds: 2));
-        expect(find.text("Mock2 recipe"), findsOneWidget);        
-
-        //attempting to apply filters
     });
 
+
+    testWidgets("Input name", (WidgetTester tester) async
+    {
+    when(mockDatabaseService.getRecipeNames(batchNumber: 0, batchSize: 40, minTime: 0, maxTime: 0, selectedIngredients: [], selectedCategories: [])).thenAnswer(
+    (_) async => [testRecipe, testRecipe2], );
+
+    when(mockDatabaseService.getIngredientsNames()).thenAnswer((_) async => ['tomato', 'potato']);
+    when(mockDatabaseService.getCategoriesNames()).thenAnswer((_) async => ['vegan', 'high protein']);
+    when(mockDatabaseService.getRecipeNames(batchNumber: 1, batchSize: 40, minTime: 0, maxTime: 0, selectedIngredients: [], selectedCategories: [], enteredKeyword: 'Mock2 recipe'))
+    .thenAnswer((_) async => [testRecipe2]);
+    await tester.pumpWidget(MaterialApp(home:AllRecipesView(onSignalReceived: (String signal){}, dbs: mockDatabaseService,)));
+    await tester.pump();
+    await tester.pump(Durations.medium2);
+
+    expect(find.text("Wyszukaj po nazwie"), findsOne);
+    final textField = find.byKey(Key("SearchField"));
+    await tester.enterText(textField, "Mock2 recipe");
+    await tester.pump();
+    await tester.pump(Duration(seconds: 4));
+
+    expect(find.textContaining('Mock recipe'), findsNothing);
+    expect(find.textContaining('Mock2 recipe'), findsExactly(2)); //entered text + displayed recipe
+    });
   });
 
 

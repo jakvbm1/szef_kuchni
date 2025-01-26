@@ -215,7 +215,7 @@ class DatabaseService {
 
     for (int i = 0; i < rawQuery.length; i++) {
       recipeNames.add(Recipe(
-        id: rawQuery[i]["id"],
+        id: rawQuery[i]["id"]-1,
         name: rawQuery[i]["name"],
         minutes: rawQuery[i]["minutes"],
         nutrition: rawQuery[i]["nutrition"],

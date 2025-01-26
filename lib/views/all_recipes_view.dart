@@ -219,6 +219,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
           padding:
               const EdgeInsets.only(left: 16, right: 16, bottom: 16, top: 8),
           child: TextField(
+            key: Key("SearchField"),
             onChanged: (value) {
               userSearchInput = value;
               _displaySearchResultsWithDelay(userSearchInput);
@@ -260,11 +261,13 @@ class _AllRecipesViewState extends State<AllRecipesView> {
 
           // BODY OF FILTER SETTINGS PANEL
           body: SizedBox(
+
             height: viewHeight *
                 0.74, // it needs to be a fixed height, code breaks otherwise
             child: SingleChildScrollView(
               // MAIN FILTER SETTINGS COLUMN
               child: Column(
+                
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   // TIME SETTING OBJECT
@@ -290,6 +293,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
+                              key: Key("minTime"),
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 if (value.isEmpty) {
@@ -316,6 +320,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
                           child: Padding(
                             padding: const EdgeInsets.all(8.0),
                             child: TextField(
+                              key: Key("maxTime"),
                               keyboardType: TextInputType.number,
                               onChanged: (value) {
                                 if (value.isEmpty) {
@@ -384,6 +389,7 @@ class _AllRecipesViewState extends State<AllRecipesView> {
 
                   // APPLY FILTERS BUTTON
                   ElevatedButton(
+                    key: Key("applyFilters"),
                     onPressed: () {
                       setState(() {
                         _recipes.clear();

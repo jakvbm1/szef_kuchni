@@ -148,7 +148,7 @@ class _RecipeViewState extends State<RecipeView> {
           onPressed: () {
             setState(() {
               //recipe.changeFavourite();
-              recipe.changeFavourite();
+              recipe.isFavourite = !recipe.isFavourite;
               if(recipe.isFavourite)
               {
                 dbService.addRecipeToFavourites(recipe.id);
