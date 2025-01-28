@@ -1,8 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:open_file/open_file.dart';
 import 'package:szef_kuchni_v2/views/all_recipes_view.dart';
 import 'package:szef_kuchni_v2/views/favourite_recipes.dart';
-import 'package:szef_kuchni_v2/views/search_recipes.dart';
 import 'package:avatar_glow/avatar_glow.dart';
 import 'package:szef_kuchni_v2/services/query_service.dart' as qs;
 import 'package:speech_to_text/speech_to_text.dart' as stt;
@@ -60,8 +58,6 @@ class _MainViewState extends State<MainView> {
       case 0:
         view = _allRecipesView;
       case 1:
-        view = const SearchRecipesView();
-      case 2:
         view = FavouriteRecipesView();
       default:
         throw UnimplementedError('no widget for $selectedIndex');
@@ -123,11 +119,6 @@ class _MainViewState extends State<MainView> {
         BottomNavigationBarItem(
           icon: Icon(Icons.home),
           label: "Home",
-        ),
-        BottomNavigationBarItem(
-          icon: Icon(Icons.search),
-          label: "Search",
-          key: Key("ToggleSearch")
         ),
         BottomNavigationBarItem(
           icon: Icon(Icons.favorite),
