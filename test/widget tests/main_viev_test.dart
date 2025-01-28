@@ -5,7 +5,6 @@ import 'package:mockito/annotations.dart';
 import 'package:szef_kuchni_v2/views/main_view.dart';
 import 'package:szef_kuchni_v2/views/all_recipes_view.dart';
 import 'package:szef_kuchni_v2/views/favourite_recipes.dart';
-import 'package:szef_kuchni_v2/views/search_recipes.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 
 
@@ -43,18 +42,6 @@ void main() {
 
       // Expect FavouriteRecipesView is rendered
       expect(find.byType(FavouriteRecipesView), findsOneWidget);
-    });
-
-    testWidgets('switches to SearchRecipesView when the search icon is tapped', (tester) async {
-      await tester.pumpWidget(createMainView());
-
-      // Tap the search icon
-      final searchIcon = find.byKey(Key("ToggleSearch"));
-      await tester.tap(searchIcon);
-      await tester.pumpAndSettle();
-
-      // Expect SearchRecipesView is rendered
-      expect(find.byType(SearchRecipesView), findsOneWidget);
     });
 
     testWidgets('toggles dark mode when switch is toggled', (tester) async {

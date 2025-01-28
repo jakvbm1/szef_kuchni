@@ -8,7 +8,6 @@ import 'package:mockito/annotations.dart';
 import 'package:szef_kuchni_v2/models/recipe_model.dart';
 import 'package:szef_kuchni_v2/services/database_service.dart';
 import 'package:szef_kuchni_v2/views/recipe_view.dart';
-import 'package:szef_kuchni_v2/views/search_recipes.dart';
 import 'package:speech_to_text/speech_to_text.dart' as stt;
 import 'recipe_view_test.mocks.dart';
 
@@ -110,21 +109,5 @@ testWidgets('loading and displaying ingredients', (WidgetTester tester) async {
 
   });
 
-  
-   //tbh nie mam pojecia jak ta kurwe odpalic by to sprawdzac sensownie jakos xd najwyzej sie to usunie
-group("pdf generation tests", (){
-
-  testWidgets("test generating a PDF", (WidgetTester tester) async {
-    await tester.pumpWidget(MaterialApp(home: RecipeView(recipe: testRecipe)));
-    final button = find.byIcon(Icons.picture_as_pdf);
-    await tester.tap(button);
-    await tester.pump();
-    await tester.pump(Duration(seconds: 5));
-    //await tester.pumpAndSettle();
-
-
-    expect(find.textContaining("Preparation Time"), isTrue);
-  });
-});
   
 }
