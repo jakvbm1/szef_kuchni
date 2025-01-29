@@ -176,11 +176,11 @@ class _MainViewState extends State<MainView> {
           });
         case 'favourites':
           setState(() {
-            selectedIndex = 2;
+            selectedIndex = 1;
           });
         case 'favourite':
           setState(() {
-            selectedIndex = 2;
+            selectedIndex = 1;
           });
         break;
 
