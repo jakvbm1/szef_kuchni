@@ -81,13 +81,14 @@ void main()
 });
 
 testWidgets('loading and displaying ingredients', (WidgetTester tester) async {
-  // Mock the DatabaseService
+
+  //preparing the mock and its return for ingredients
   final mockDatabaseService = MockDatabaseService();
   when(mockDatabaseService.getRecipeIngredients(any)).thenAnswer(
     (_) async => ['Salt', 'Pepper'],
   );
 
-  // Inject mock service into RecipeView
+
   await tester.pumpWidget(MaterialApp(
     home: RecipeView(
       recipe: testRecipe,
@@ -95,11 +96,11 @@ testWidgets('loading and displaying ingredients', (WidgetTester tester) async {
     ),
   ));
 
-  // Wait for the Future to resolve and the UI to rebuild
+
   await tester.pump();
   await tester.pumpAndSettle();
   // Verify ingredients are displayed
-  expect(find.textContaining('Ingredients'), findsOneWidget); // Adjust text if necessary
+  expect(find.textContaining('Ingredients'), findsOneWidget);
   expect(find.textContaining('Salt'), findsOneWidget);
   expect(find.textContaining('Pepper'), findsOneWidget);
 });
